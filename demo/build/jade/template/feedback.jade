@@ -1,0 +1,75 @@
+extends ../layout/layout
+block head
+   title 意见反馈
+   link(rel='stylesheet', type='text/css', href='../css/cckt.css')
+block body
+   #mask
+      .setup
+         //头部
+         .setup_header.clearfix
+            .header_l.icon-arrow-left(tapmode,onclick='lx()')
+            .header_r.send(tapmode,onclick='sub()') 发送
+            .header_c 意见反馈
+         //内容区
+         .input-txt
+            textarea(name='content' placeholder='请输入反馈，我们将为您不断改进')
+block scripts
+    script(type='text/javascript').
+        var is_ok = true;
+        function sub(){
+            var content= $.trim($('textarea[name=content]').val());
+            if(content==''){
+                api.toast({
+                    msg:'意见内容不能为空',
+                    location:'middle'
+                });
+                return false;
+            }
+            //var title=content.substr(0,20);
+            var nickName=get_loc_val('mine','nickName');
+            var param={};
+            var systype = api.systemType;
+            param.contact="来源:"+systype;
+            param.content=content;
+            param.title='ipad手机留言';
+            param.nickName=nickName;
+            param.token=$api.getStorage('token');
+            api.showProgress({
+                title: '发表中',
+                modal: true
+            });
+
+            if(is_ok){
+                is_ok=false;
+                ajaxRequest('api/v2/lessonMessage/addLMG', 'post', param, function (ret, err) {//002.003 留言接口
+                    api.hideProgress();
+                    if (err) {
+                        is_ok=true;
+                        api.toast({
+                            msg: err.msg,
+                            location: 'middle'
+                        });
+                        return false;
+                    }
+                    if (ret && ret.state == 'success') {
+                        api.toast({
+                            msg: '谢谢您的反馈',
+                            location: 'middle'
+                        });
+                        setTimeout(function(){
+                              api.closeFrame();
+                        },600);
+                    } else {
+                        is_ok = true;
+                        api.toast({
+                            msg: '发表失败，请重试！',
+                            location: 'middle'
+                        });
+                    }
+                });
+            }
+        }
+        function lx(){
+            api.closeFrame();
+        }
+
