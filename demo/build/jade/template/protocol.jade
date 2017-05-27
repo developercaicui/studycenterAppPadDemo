@@ -1,15 +1,11 @@
 extends ../layout/layout
+
 block body
-    #header.header.header-black
-        .left(onclick='my_close()', tapmode='')
-            i.icon-arrow-left
-        .left-txt
-            | 注册协议
+    -var cont = '注册协议'
+    include ../modules/header
+
 block scripts
     script(type="text/javascript").
-        function my_close(){
-            api.closeWin();
-        }
         apiready = function () {
             var header = $api.byId('header');
             $api.fixIos7Bar(header);
@@ -18,7 +14,7 @@ block scripts
             var height = api.winHeight - headerPos.h;
             api.openFrame({
                 name: 'user_protocol',
-                url: 'http://www.caicui.com/help/ff80808147db71340147f60c159a0411',
+                url: 'http://www.caicui.com/help/ff80808147db71340147f60c159a0411?client=mobile',
                 bgColor: '#fff',
                 bounces: true,
                 opaque: true,

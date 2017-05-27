@@ -1,15 +1,18 @@
 script(id='tpl',type='text/x-dot-template')
     | {{~it.res1:value:k }}
     .cache-course.note-chapter
-        .cache-list.chaptertitle
+        .cache-list
             dl.cache-list-title
                 dt
                     p {{=it.res1[k].title}}
                 dd
+                    i.icon-edit
+                    span {{=it.res1[k].nodeNum}}
+                    .msg-mark
         | {{~it.res1[k].children:val:key}}
         | {{var c_id=val.id;}}
         | {{ if(val.isLeaf=='false'){ }}
-        ul.cache-list.one_chapter
+        ul.cache-list.one_chapter(one_id="{{=it.res2[c_id]}}")
             li.list
                 dl
                     dt(onclick="toggleChild(this)")
@@ -25,7 +28,7 @@ script(id='tpl',type='text/x-dot-template')
                     | {{~val2.children:val3:key3}}
                     li.list
                         dl.haschild
-                            dt(onclick="noteList(this)", data-key='{{=it.res1[k].id}}', data-id="{{=val3.id}}" title="{{=val3.title}}")
+                            dt(onclick="to_list(this)",id='{{=val3.id}}',key='{{=it.res1[k].id}}',title='{{=val3.title}}')
                                 p {{=val3.title}}
                             dd
                                 i.icon-edit
@@ -38,7 +41,7 @@ script(id='tpl',type='text/x-dot-template')
                 | {{ }else{ }}
                 ul.list
                     dl
-                        dt(onclick="noteList(this)", data-key='{{=it.res1[k].id}}', data-id="{{=val2.id}}" title="{{=val2.title}}")
+                        dt(onclick="to_list(this)",id='{{=val2.id}}',key='{{=it.res1[k].id}}',title='{{=val2.title}}')
                             p {{=val2.title}}
                         dd
                             i.icon-edit
@@ -50,10 +53,10 @@ script(id='tpl',type='text/x-dot-template')
                 | {{ } }}
                 | {{~}}
         | {{ }else{ }}
-        ul.cache-list.one_chapter
+        ul.cache-list.one_chapter(one_id="{{=it.res2[c_id]}}")
             li.list
                 dl
-                    dt(onclick="noteList(this)", data-key='{{=it.res1[k].id}}', data-id="{{=val.id}}" title="{{=val.title}}")
+                    dt(onclick="to_list(this)",id='{{=val.id}}',key='{{=it.res1[k].id}}',title='{{=val.title}}')
                         p  {{=val.title}}
         | {{ } }}
         | {{~}}

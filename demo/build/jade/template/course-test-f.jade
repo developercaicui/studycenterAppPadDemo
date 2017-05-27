@@ -1,7 +1,7 @@
 extends ../layout/layout
 block head
     link(rel='stylesheet', href='../css/swiper.min.css')
-    //link(rel='stylesheet', href='../css/user-center.css')
+    link(rel='stylesheet', href='../css/user-center.css')
     link(rel='stylesheet', href='../css/about-video.css')
 block body
     // 题目内容56576457645
@@ -27,52 +27,56 @@ block body
         .right
             a(onclick="jiaojuan()",tapmode)
                 i.icon-clipboard
-                |交卷
+                | 交卷
             a(onclick="createNotes()",tapmode)
                 i.icon-edit2
-                |笔记
+                | 笔记
             a(onclick="createQuestion()",tapmode)
                 i.icon-comment-new
-                |提问
+                | 提问
 
     //测试题
     script(id='exam_tpl',type='text/x-dot-template')
-        |{{~it.items:value:key}}
-        .cours-contenet.swiper-slide
+        | {{~it.items:value:key}}
+        .course-content.swiper-slide
             input.select-tag(type='checkbox')
             .course-test-title
                 p
-                    | {{ if(!isEmpty(value.title)) { }} {{=value.title}}  {{ } }}
-            |{{ if(value.questionTypes=='radio'){ }}
+                    | {{ if(!isEmpty(value.title)) { }}  {{=value.title.replace(/\n|\r|\t|<[^<]*>/g,"")}} {{ } }}
+            | {{ if(value.questionTypes=='radio'){ }}
             //单项选择题
             .course-test-selector.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 | {{~JSON.parse(value.context):val:kk}}
-                .selector-detail.clearfix(data-select='{{=numToAbc(kk)}}',onclick="select_radio(this,'{{=key}}')",tapmode,data-check='{{=val.isChecked}}')
+                | {{ if(!isEmpty(val.title)) { }}
+                .selector-detail.clear-fix(data-select='{{=numToAbc(kk)}}',onclick="select_radio(this,'{{=key}}')",tapmode,data-check='{{=val.isChecked}}')
                     span {{=numToAbc(kk)}}
                     p
-                        | {{=val.title}}
+                        | {{=val.title.replace(/<[^<]*>/g,"")}}
                 | {{~}}
-            |{{ }else if(value.questionTypes=='checkbox'){ }}
+                | {{ } }}
+            | {{ }else if(value.questionTypes=='checkbox'){ }}
             //多项选择题
             .course-test-selector.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 | {{~JSON.parse(value.context):val:kk}}
+                | {{ if(!isEmpty(val.title)) { }}
                 .selector-detail.clear-fix(data-select='{{=numToAbc(kk)}}',onclick="select_checkbox(this,'{{=key}}')",tapmode,data-check='{{=val.isChecked}}')
                     span {{=numToAbc(kk)}}
                     p
-                        | {{=val.title}}
+                        | {{=val.title.replace(/<[^<]*>/g,"")}}
                 | {{~}}
-            |{{ }else if(value.questionTypes=='question'){ }}
+                | {{ } }}
+            | {{ }else if(value.questionTypes=='question'){ }}
             //问答题
             .course-test-selector.course_selector1.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 .answer_tit 答案
                 textarea.answer_box()
-            |{{ }else if(value.questionTypes=='blank'){ }}
+            | {{ }else if(value.questionTypes=='blank'){ }}
             //填空题
             .course-test-selector.course_selector2.cl.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 .answer_left 答案
                 .answer_right
                     input()
-            |{{ }else if(value.questionTypes=='matrixBlank'||value.questionTypes=='blank'){ }}
+            | {{ }else if(value.questionTypes=='matrixBlank'||value.questionTypes=='blank'){ }}
             //矩阵填空题
             .course-test-selector.course_selector3.course_selector4.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 table.table_box.table_box2
@@ -87,7 +91,7 @@ block body
                         | {{ } }}
                         | {{ } }}
                     | {{ } }}
-            |{{ }else if(value.questionTypes=='matrixCheckbox'){ }}
+            | {{ }else if(value.questionTypes=='matrixCheckbox'){ }}
             //矩阵多选题
             .course-test-selector.course_selector3.course_selector4.course_selector5.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 table.table_box.table_box2.table_box3
@@ -104,7 +108,7 @@ block body
                         | {{ } }}
                         | {{ } }}
                     | {{ } }}
-            |{{ }else if(value.questionTypes=='matrixRadio'){ }}
+            | {{ }else if(value.questionTypes=='matrixRadio'){ }}
             //矩阵单选题
             .course-test-selector.course_selector3.course_selector5.course_selector6.exam-yf(data-type='{{=value.questionTypes}}',data-num='{{=key}}')
                 table.table_box.table_box2.table_box3.table_box6
@@ -121,13 +125,13 @@ block body
                         | {{ } }}
                         | {{ } }}
                     | {{ } }}
-            |{{ }else if(value.questionTypes=='multiTask'){ }}
+            | {{ }else if(value.questionTypes=='multiTask'){ }}
             .course-test-selector.course_selector7.exam-yf
                 .question-tit {{=value.background}}
-            |{{ } }}
+            | {{ } }}
             // 答案解析
             .answer-analysis
-                .answer-analysis-btn(tapmode,onclick="showAnalysis(this,{{=key}})")
+                .answer-analysis-btn(onclick="showAnalysis(this,'{{=key}}')",tapmode)
                     | 查看解析
                     i.icon-arrow-down
                 .answer-analysis-cont
@@ -137,8 +141,14 @@ block body
                         .cont {{=value.answerResolution}}
                     .user-data
 
-        |{{~}}
+        | {{~}}
 block scripts
+
     script(type='text/javascript', src='../script/jquery.min.js')
     script(type='text/javascript', src='../script/swiper.js')
     script(type='text/javascript', src='../script/pagejs/course-test-f.js')
+    script(type='text/javascript').
+        $(function () {
+            $('.qesition_complete').css({height: document.documentElement.clientHeight - $('.footer-black').height()});
+        });
+

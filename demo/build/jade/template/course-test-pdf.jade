@@ -21,10 +21,10 @@ block body
 
     //测试题
     script(id='pdf_tpl',type='text/x-dot-template')
-        |{{~it.pdfPic:value:key}}
+        | {{~it.pdfPic:value:key}}
         .course-content.swiper-slide
             img(style='width:100%;height:auto;margin-top:-2rem;',src='{{=common_url+value}}')
-        |{{~}}
+        | {{~}}
 block scripts
     script(type='text/javascript', src='../script/jquery.min.js')
     script(type='text/javascript', src='../script/swiper.js')

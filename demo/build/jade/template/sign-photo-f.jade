@@ -1,6 +1,6 @@
 extends ../layout/layout
 block html
-    -var htmlclass = "transparent"
+    -var htmlClass = "transparent";
 block body
     .backdrop
     ul.set-photo
@@ -9,51 +9,53 @@ block body
         li(tapmode='', onclick="getPic('album',200,200)") 选择本地图片
 block scripts
     script(type='text/javascript').
-        apiready = function() {
-            $('.set-photo').css('display','block');
+        apiready = function () {
             $api.setStorage('sign-photo', 2);
+            $('html').css('background-color', 'rgba(0,0,0,0.5)');
+            commonFun.adjustHeight(0.077);
             $('.backdrop').click(function () {
                 $api.setStorage('sign-photo', 1);
-                $('.set-photo').css('display', 'none');
+                api.hideProgress();
                 api.closeFrame();
             });
+            $('.set-photo').show();
         };
         function upload(img) {
             api.showProgress({
-                title : '上传中',
-                modal : true
+                title: '上传中',
+                modal: true
             });
-            $('.set-photo').hide();
+            $('.set-photo').addClass('none');
             var headers = {
-                'X-Requested-With' : 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest'
             };
             api.ajax({
-                url : common_url + '/' + 'api/v2.1/commons/fileUpload',
-                method : 'post',
-                headers : headers,
-                timeout : 120,
-                cache : false,
-                data : {
-                    values : {
-                        'token' : $api.getStorage('token')
+                url: common_url + '/' + 'api/v2.1/commons/fileUpload',
+                method: 'post',
+                headers: headers,
+                timeout: 120,
+                cache: false,
+                data: {
+                    values: {
+                        'token': $api.getStorage('token')
                     },
-                    files : {
-                        'file' : img
+                    files: {
+                        'file': img
                     }
                 }
-            }, function(ret, err) {
+            }, function (ret, err) {
                 api.hideProgress();
                 if (err) {
                     api.toast({
-                        msg : err.msg,
-                        location : 'middle'
+                        msg: err.msg,
+                        location: 'middle'
                     });
                     return false;
                 }
-                if (ret && ret.state=='success') {
+                if (ret && ret.state == 'success') {
                     api.sendEvent({
-                        name:'photo_change',
-                        extra:ret.data
+                        name: 'photo_change',
+                        extra: ret.data
                     });
                     setTimeout(function () {
                         api.closeFrame();
@@ -68,12 +70,12 @@ block scripts
         }
         function getPic(type, w, h) {
             $('.backdrop').unbind();
-            if (api && api.systemType == '112131') {
+            if (api && api.systemType == '1233') {
                 var imageCrop = api.require('imageCrop');
-                switch(type) {
+                switch (type) {
                     case 'camera':
-                        imageCrop.takePhoto(function(ret, err) {
-                            $('.backdrop').click(function() {
+                        imageCrop.takePhoto(function (ret, err) {
+                            $('.backdrop').click(function () {
                                 $api.setStorage('sign-photo', 1);
                                 api.closeFrame();
                             });
@@ -92,20 +94,20 @@ block scripts
                                     return false;
                                 }
                                 imageCrop.clipPhoto({
-                                    "imgPath" : ret.imgPath,
-                                    "height" : h,
-                                    "width" : w
-                                }, function(ret1, err1) {
+                                    "imgPath": ret.imgPath,
+                                    "height": h,
+                                    "width": w
+                                }, function (ret1, err1) {
                                     if (err1) {
                                         api.toast({
-                                            msg : err1.msg,
-                                            location : 'middle'
+                                            msg: err1.msg,
+                                            location: 'middle'
                                         });
                                         $api.setStorage('sign-photo', 1);
                                         api.closeFrame();
                                         return false;
                                     }
-                                    $('body').bind('click', function() {
+                                    $('body').bind('click', function () {
                                         $api.setStorage('sign-photo', 1);
                                         api.closeFrame();
                                     });
@@ -117,8 +119,8 @@ block scripts
                         });
                         break;
                     case 'album':
-                        imageCrop.getPhoto(function(ret, err) {
-                            $('.backdrop').click(function() {
+                        imageCrop.getPhoto(function (ret, err) {
+                            $('.backdrop').click(function () {
                                 $api.setStorage('sign-photo', 1);
                                 api.closeFrame();
                             });
@@ -127,15 +129,23 @@ block scripts
                                 return false;
                             }
                             if (ret && ret.imgPath) {
+                                if (!in_array(getFixName(ret.imgPath), allowPicTtype)) {
+                                    api.toast({
+                                        msg: '无法上传此种格式的图片',
+                                        location: 'middle'
+                                    });
+                                    api.closeFrame();
+                                    return false;
+                                }
                                 imageCrop.clipPhoto({
-                                    "imgPath" : ret.imgPath,
-                                    "height" : h,
-                                    "width" : w
-                                }, function(ret1, err1) {
+                                    "imgPath": ret.imgPath,
+                                    "height": h,
+                                    "width": w
+                                }, function (ret1, err1) {
                                     if (err1) {
                                         api.toast({
-                                            msg : err1.msg,
-                                            location : 'middle'
+                                            msg: err1.msg,
+                                            location: 'middle'
                                         });
                                         return false;
                                     }
@@ -150,23 +160,31 @@ block scripts
                         break;
                 }
             } else {
+
+
                 api.getPicture({
-                    sourceType : type,
-                    encodingType : 'jpg',
-                    destinationType : 'url',
-                    targetWidth : w,
-                    targetHeight : h,
-                    allowEdit : true
-                }, function(ret, err) {
-                    $('.backdrop').click(function() {
+                    sourceType: type,
+                    encodingType: 'jpg',
+                    destinationType: 'url',
+                    targetWidth: w,
+                    targetHeight: h,
+                    allowEdit: true
+                }, function (ret, err) {
+                    $('.backdrop').click(function () {
                         $api.setStorage('sign-photo', 1);
-                        $('.set-photo').css('display', 'none');
-                        api.closeFrame();
+                        api.hideProgress();
+                        api.setFrameAttr({
+                            name: 'select-photo-f',
+                            hidden: true
+                        });
                     });
                     if (err) {
                         $api.setStorage('sign-photo', 1);
-                        $('.set-photo').css('display', 'none');
-                        api.closeFrame();
+                        api.hideProgress();
+                        api.setFrameAttr({
+                            name: 'select-photo-f',
+                            hidden: true
+                        });
                         return false;
                     }
                     if (ret && ret.data) {
