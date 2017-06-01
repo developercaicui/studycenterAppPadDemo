@@ -14,7 +14,7 @@
   <body>
     <div class="s-head">
       <div class="center">课程章节</div>
-      <ul class="right">
+      <ul class="right none">
         <li tapmode onclick="rightcancel($(this))" class="none">
           <div class="btn btn-o">取消</div>
         </li>
@@ -24,6 +24,10 @@
         <li tapmode onclick="righttrash($(this))"><i class="icon-trash"></i></li>
       </ul>
     </div>
+   <!--  <div class="s-footer">
+        <div class='avaiace' onclick='to_cache()'>
+        <span class='manage'>缓存管理</span><p class='space'>可用空间100000MB<span></span></p></div>
+    </div> -->
     <script type="text/javascript" src="../script/comm.js"></script>
     <script type="text/javascript" src="../script/doT.min.js"></script>
     <script type="text/javascript" src="../script/caicui.js"></script>
@@ -36,7 +40,14 @@
               }, function(ret) {
                   $('.btn').addClass('none');
               });
-          myFrame('course-chapter-f','small',true);
+
+          if(api.systemType == "ios"){
+            window.localStorage.caicui_headSh = headSh = 148;
+          }else{
+            window.localStorage.caicui_headSh = headSh = 99;
+          }
+          
+         myFrame('course-chapter-f','small',true);
       };
       //删除
       function righttrash (obj){

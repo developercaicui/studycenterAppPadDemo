@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="transparent video-menu">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0">
@@ -14,129 +14,112 @@
     <script type="text/javascript" src="../script/zepto.js"></script>
     <link rel="stylesheet" href="../css/about-video.css">
     <style type="text/css">
-        .header{background: none;border-bottom: 1px solid #9b999a;}
-        .header .left:after{display: none;}
-        .header .left-next{padding-left: 1.6rem;}
+      .about-video-content {
+          margin-top: 0; 
+      }
+      .chapter-task ul {
+           margin-top:0; 
+      }
+      .chapter-task li {
+          color:#000;
+          display: table;
+      }
 
-        .chapter-task ul{margin-top:0; }
-        .chapter-task li .v-name span:nth-child(1) {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 3.2rem;
-        }
-        .chapter-task li .v-name span:nth-child(2) {
+      .chapter-task li p span {
+         color:#000;
+      }
+      .chapter-task li .v-name span:nth-child(1) {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 3.2rem;
+      }
+      .chapter-task li .v-name span:nth-child(2) {
           position: absolute;
-          right: 0;
-          top: -0.2rem;
-          color: #fff;
+          right: -37%;
+          top: -0.05rem;
+          color: #00a085;
           font-size: .3rem;
       }
-        .chapter-task .video-catego>span {
-          background: url(../image/tv.png) no-repeat;
-          background-size: 100% 100%;
-        }
-        .chapter-task li>span {
-            height: 0.54rem;
-            width: 0.64rem;
-        }
-        .chapter-task li .v-progress {
-            width: 82%;
-            background-color: #00493a;
-        }
-        .about-video-content ul li {
-            border-bottom: 1px solid #2b292a;
-        }
-        .about-video-content ul li:last-child {
-            border-bottom: 1px solid #2b292a;
-        }
-        .down-progress {
-            color: #00a186;
-            position: absolute;
-            right: 0;
-            line-height: .7rem;
-        }
-        .chapter-task li>div {
-            left: 15%;
-        }
-        .video-body{
-            top: 1.25rem;
-        }
-        .about-video-content{
-          margin-top: 0;
-        }
-        .taskList{width: 100%;}
-        .taskList dt, .taskList dd {
-            /*display: table-cell;*/
-            height: 1rem;
-            /*padding: 0 0 0 0.2rem;*/
-        }
-        .taskList dt {
-            width: 85%;
-            float: left;
-        }
-        .taskList dd{
-          float: right;
-          width: 15%;
-        }
-        .chapter-task li p:nth-child(1) {
-            width: 80%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .chapter-task .video-catego>span{
-      background: url(../image/video2.png) no-repeat;
+      /*.chapter-task .video-catego>span {
+        background: url(../image/tv.png) no-repeat;
         background-size: 100% 100%;
-        width: 0.50rem;
-        height: 0.45rem;
-        position: absolute;
-        left: 0.6rem;
-        }
-        .chapter-task .note-catego>span{
-          background: url(../image/task2.png) no-repeat;
-        background-size: 100% 100%;
-        width: 0.45rem;
-        height: 0.45rem;
-        top: 0.6rem;
-    /*left: 10%;*/
-        }
-        .taskVideo{
-      display: inline-block;
+      }*/
+      .chapter-task .video-catego>span {
+          display: inline-block;
         background: url(../image/video.png) no-repeat;
         background-size: 100% 100%;
-        width: 0.70rem;
-      height: 0.55rem;
+        width: 0.5rem;
+        height: 0.4rem;
+      }
+      .chapter-task li>span {
+          height: 0.54rem;
+          width: 0.64rem;
+      }
+      .chapter-task li .v-progress {
+          width: 75%;
+          background-color: #b7e6de;
+      }
+      .about-video-content ul li {
+          border-bottom: 1px solid #d4d4d4;
+      }
+      .about-video-content ul li:last-child {
+          border-bottom: 1px solid #d4d4d4;
+      }
+      .down-progress {
+          color: #00a186;
+          position: absolute;
+          right: 0;
+      }
+      .chapter-task .icon-check {
+           display: none; 
+          position: absolute;
+          top: 0.2rem;
+          right: 0.1rem;
+          font-size: 0.2rem;
+          background: #fff;
+          padding-top: 0.05rem;
+          border-radius: 0.08rem;
+          width: 0.4rem;
+          height: 0.4rem;
+          border: 1px solid rgba(0,0,0,0.2);
+          color: #fff;
+          padding-left: 0.1rem;
+      }
+      .chapter-task .icon-check.active {
+          text-shadow: 0 1px 0 #00a085;
+          color: #00a085;
+          border-color: #00a085;
+      }
+      .checking .chapter-task .icon-check {
+        display: block;
+      }
+      .checking .chapter-task .down-progress {
+          display: none;
+      }
+      .taskList{width: 100%;}
+      .taskList dt, .taskList dd {
+          height: 1rem;
+          padding: 0 0 0 0.2rem;
+      }
+      .taskList dt {
+          width: 75%;
+          float: left;
+      }
+      .taskList dd {
+          width: 15%;
+          float: right;
+          position: absolute;
+          right: -1.1rem;
+      }
       
-    }
-    .taskExam{
-        display: inline-block;
-          background: url(../image/task.png) no-repeat;
-          background-size: 100% 100%;
-          width: 0.30rem;
-          height: 0.35rem;
-          
+      @font-face {
+        font-family: 'icomoon';
+        src: url("../fonts/icomoon2.ttf");
+        font-weight: normal;
+        font-style: normal;
       }
-      .left .notebook{
-        display: inline-block;
-        background: url(../image/notebook.png) no-repeat;
-        background-size: 100% 100%;
-        width: 0.50rem;
-        height: 0.52rem;
-        position: absolute;
-        bottom: 0.35rem;
-        left: 0.6rem;
-      }
-        @font-face {
-          font-family: 'icomoon';
-          src: url("../fonts/icomoon2.ttf");
-          font-weight: normal;
-          font-style: normal;
-        }
-        .down-progress i{
-      font-size: 0.4rem;
-    }
-        .down-progress[status='ing'] i:before,
+      .down-progress[status='ing'] i:before,
     .down-progress .ing i:before,
     .down-progress[type='1'] i:before {
       content: '\e972';
@@ -149,79 +132,40 @@
       content: '\e973';
       font-size: 0.4rem;
     }
-    .header{
-      color:#fff;
-    }
-    .header .left-next{
-      float: left;
-      text-align:left;
-      font-size:0.3rem;
-    }
     </style>
   </head>
   <body>
-
-      <div onclick="closeThis()" tapmode class="backdrop"></div>
-    <div style="opacity:.0001; position: absolute; top: 50%;z-index:-1">
-      <div id="svgDown" class="down-progress"></div>
-    </div>
-    <div class="about-video">
-      <div class="header">
-        <div class="left"><span class="notebook"></span></div>
-        <div class="left-next">本章任务</div>
-      </div>
-      <div class="video-body">
-        <!-- 章节任务-->
-         <div id="chaTask" class="about-video-content chapter-task"></div>
-      </div>
-    </div>
    
+   <div id="chaTask" class="about-video-content chapter-task"></div>
    
     <!--本章任务-->
     <script id="task_tpl" type="text/x-dot-template">
-    <ul>{{~it.chapters:val:key}}
+    {{~it.chapters:val:key}}
       {{ if(val.isLeaf=='false'){ }}
-          {{~val.children:val2:key2}}
+          {{~val.children:val2:key2}}<ul>
           {{ if(val2.isLeaf=='false'){ }}
           {{~val2.children:val3:key3}}
+          
             {{~val3.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
             <li class="video-catego" style="display: none;"><span class="taskVideo"></span>
-              <div>
-                <dl class="taskList" style="display: table;">
-                  <dt onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val3.chapterId}}')" tapmode >
-                    <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;">{{=val4.title}}</p>
-                    <p class="v-name"><span class="span11"></span><span></span></p>
-                    <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
-                  </dt>
-                  <dd>
-        
-                      <div id="{{=val3.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="{{=val3.chapterId}}" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="{{=val3.chapterTitle}}" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
-                      <div class="val"></div>
-                    </div>
-                      <div class="down_data none">{{=JSON.stringify(val4)}}</div>
-                    </dd>
-                </dl>
-              </div>   
-            </li>{{ }else if(val4.taskType=='exam'){ }}
-            <li class="note-catego" style="display: none;" id="{{=val4.taskId}}"><span class="taskExam"></span>
             <div>
-              <dl class="taskList task{{=val4.taskId}}" style="display: table;">
-                  <dt onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val3.chapterId}}')" tapmode >
-                    <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;line-height: 0.7rem;">{{=val4.title}}</p>
-                    <!--<p class="v-name"><span class="span11"></span><span>0%</span></p>-->
-                    <!--<p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>-->
-                  </dt>
-                  <dd>
-               
-                      <div id="{{=val3.chapterId}}" class="down-progress task{{=val4.videoCcid}}">
-                      <span>{{=val4.totalCount}}题</span>
-                    </div>
-                      <div class="down_data none">{{=JSON.stringify(val4)}}</div>
+                  <dl class="taskList">
+                    <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val3.chapterId}}')">
+                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
+                      <p class="v-name"><span class="span11"></span><span></span></p>
+                      <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
+                    </dt>
+                    <dd>
+                      <i dataid="{{=val3.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
+                      <div id="{{=val3.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="{{=val3.chapterId}}" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="{{=val3.chapterTitle}}" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
+                    <div class="val"></div>
+                  </div>
+                  <div class="down_data none">{{=JSON.stringify(val4)}}</div>
                     </dd>
-                </dl>
-            </div>
-          </li>
+                  </dl>
+                </div>       
+            </li>
             {{ } }}
             {{~}}
             {{~}}
@@ -230,41 +174,23 @@
             {{~val2.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
             <li class="video-catego" style="display: none;"><span class="taskVideo"></span>
-              <div>
-                <dl class="taskList" style="display: table;">
-                  <dt onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val2.chapterId}}')" tapmode >
-                    <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;">{{=val4.title}}</p>
-                    <p class="v-name"><span class="span11"></span><span></span></p>
-                    <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
-                  </dt>
-                  <dd>
-    
-                      <div id="{{=val2.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
-                      <div class="val"></div>
-                    </div>
-                      <div class="down_data none">{{=JSON.stringify(val4)}}</div>
-                    </dd>
-                </dl>
-              </div>   
-            </li>{{ }else if(val4.taskType=='exam'){ }}
-            <li class="note-catego" style="display: none;" id="{{=val4.taskId}}"><span class="taskExam"></span>
             <div>
-              <dl class="taskList task{{=val4.taskId}}" style="display: table;">
-                  <dt onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val2.chapterId}}')" tapmode >
-                    <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;line-height: 0.7rem;">{{=val4.title}}</p>
-                    <!--<p class="v-name"><span class="span11"></span><span>0%</span></p>-->
-                    <!--<p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>-->
-                  </dt>
-                  <dd>
- 
-                      <div id="{{=val2.chapterId}}" class="down-progress task{{=val4.videoCcid}}">
-                      <span>{{=val4.totalCount}}题</span>
-                    </div>
-                      <div class="down_data none">{{=JSON.stringify(val4)}}</div>
+                  <dl class="taskList">
+                    <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val2.chapterId}}')">
+                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
+                      <p class="v-name"><span class="span11"></span><span></span></p>
+                      <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
+                    </dt>
+                    <dd>
+                      <i dataid="{{=val2.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
+                      <div id="{{=val2.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
+                    <div class="val"></div>
+                  </div>
+                  <div class="down_data none">{{=JSON.stringify(val4)}}</div>
                     </dd>
-                </dl>
-            </div>
-          </li>
+                  </dl>
+                </div>       
+            </li>
             {{ } }}
             {{~}}
           {{ } }}
@@ -273,16 +199,16 @@
       {{ }else{ }}
         {{~val.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
-            <li class="video-catego" style="display: none;"><span class="taskVideo"></span>
+            <li class="video-catego" style="display: none;width: 100%;padding-top: 0.2rem;border-bottom: 1px solid #d4d4d4;"><span class="taskVideo"></span>
             <div>
                   <dl class="taskList">
                     <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val.chapterId}}')">
-                      <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;">{{=val4.title}}</p>
+                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
                       <p class="v-name"><span class="span11"></span><span></span></p>
                       <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
                     </dt>
                     <dd>
-                      
+                      <i dataid="{{=val.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
                       <div id="{{=val.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
                     <div class="val"></div>
                   </div>
@@ -290,109 +216,24 @@
                     </dd>
                   </dl>
                 </div>       
-            </li>{{ }else if(val4.taskType=='exam'){ }}
-            <li class="note-catego" style="display: none;"><span class="taskExam"></span>
-            <div>
-              <dl class="taskList task{{=val4.taskId}}" style="display: table;">
-                  <dt onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val.chapterId}}')" tapmode >
-                    <p style="color:#fff;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:5.5rem;line-height: 0.7rem;">{{=val4.title}}</p>
-                    <!--<p class="v-name"><span class="span11"></span><span>0%</span></p>-->
-                    <!--<p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>-->
-                  </dt>
-                  <dd>
- 
-                      <div id="{{=val.chapterId}}" class="down-progress task{{=val4.videoCcid}}">
-                      <span>{{=val4.totalCount}}题</span>
-                    </div>
-                      <div class="down_data none">{{=JSON.stringify(val4)}}</div>
-                    </dd>
-                </dl>
-            </div>
-          </li>
+            </li>
             {{ } }}
             {{~}}
-      {{ } }}
-      {{~}}</ul>
-
+      </ul>{{ } }}
+      {{~}}
     </script>
+    
     <script type="text/javascript" src="../script/jquery.min.js"></script>
-    <script type="text/javascript">
-      function next(leave, num1, num2, num3, obj, cid) {
-          if (pageName == 'catalog') {
-              var courseId = api.pageParam.course_id;
-              //如果没有缓存信息，就从接口获取
-              var tmp_course_detail = $api.getStorage(courseId);
-              if (isEmpty(tmp_course_detail)) {
-                  //获取课程的详细信息
-                  //api/v2.1/course/courseDetail，接口编号：004-006
-                  ajaxRequest('api/v2.1/course/courseDetail', 'get', {
-                      courseId: courseId
-                  }, function (ret, err) {//004.006获取课程的详细信息
-                      if (err) {
-                          api.hideProgress();
-                          api.toast({
-                              msg: err.msg,
-                              location: 'middle'
-                          });
-                          return false;
-                      }
-                      if (ret && ret.state == 'success') {
-                          if (!ret.data) {
-                              api.toast({
-                                  msg: '暂无任务',
-                                  location: 'middle'
-                              });
-                              return false;
-                          }
-                          course_detail = ret.data[0];
-                          //课程详情数据
-                          $api.setStorage(courseId, course_detail);
-                          var task_arr2 = save_tasks(course_detail);
-                          var task_info_detail2;
-                          for (var i in task_arr2) {
-                              if (task_arr2[i].chapterId == cid) {
-                                  task_info_detail2 = task_arr2[i];
-                                  break;
-                              }
-                          }
-                          if (isEmpty(task_info_detail2)) {
-                              api.toast({
-                                  msg: '暂无任务',
-                                  location: 'middle'
-                              });
-                              return false;
-                          }
-                          judge_task(task_info_detail2.taskInfo, 0);
-                      }
-                  });
-              } else {
-                  course_detail = tmp_course_detail;
-                  var task_arr2 = save_tasks(course_detail);
-                  var task_info_detail2;
-                  for (var i in task_arr2) {
-                      if (task_arr2[i].chapterId == cid) {
-                          task_info_detail2 = task_arr2[i];
-                          break;
-                      }
-                  }
-                  if (isEmpty(task_info_detail2)) {
-                      api.toast({
-                          msg: '暂无任务',
-                          location: 'middle'
-                      });
-                      return false;
-                  }
-                  judge_task(task_info_detail2.taskInfo, 0);
-              }
-          } else {
-              //changeCharpter(obj, num1, num2, num3);
-              changeCharpter(obj, cid);
-          }
-      }
-      
+    <script type="text/javascript" src="../script/comm.js"></script>
+    <script type="text/javascript" src="../script/doT.min.js"></script>
+    <script type="text/javascript" src="../script/caicui.js"></script>
+    <script type="text/javascript" src="../script/db.js"></script>
+    <script type="text/javascript" src="../script/saveTasksProgress.js"></script>
+    <script>
+        
       //统计每个章节的各种任务个数，参数num1表示一级章节，参数num2表示二级章节
       function countTaskType(num1, num2, num3) {
-          return '';
+          // return '';
           if (pageName == 'video-menu') {
               return '';
           }
@@ -424,16 +265,16 @@
           }
           var tmp_html = '';
           if (tmp_num.video > 0) {
-              tmp_html += '<li><i class="icon-play"></i> <span class="multiples"> × ' + tmp_num.video + '</span></li>';
+              tmp_html += '<li style="font-size:.3rem;"><i class="icon-video"></i> <span class="multiples">' + tmp_num.video + '</span></li>';
           }
           if (tmp_num.exam > 0) {
-              tmp_html += '<li><i class="icon-edit2"></i> <span class="multiples"> × ' + tmp_num.exam + '</span></li>';
+              tmp_html += '<li><i class="icon-notebook" style="font-size:.35rem;"></i> <span class="multiples" style="font-size:.3rem;">' + tmp_num.exam + '</span></li>';
           }
           if (tmp_num.doc > 0) {
-              tmp_html += '<li><i class="icon-word-card"></i> <span class="multiples"> × ' + tmp_num.doc + '</span></li>';
+              tmp_html += '<li><i class="icon-word-card"></i> <span class="multiples">' + tmp_num.doc + '</span></li>';
           }
           if (tmp_num.entry > 0) {
-              tmp_html += '<li><i class="icon-language"></i> <span class="multiples"> × ' + tmp_num.entry + '</span></li>';
+              tmp_html += '<li><i class="icon-language"></i> <span class="multiples">' + tmp_num.entry + '</span></li>';
           }
           return tmp_html;
       
@@ -937,11 +778,6 @@
           }
       }
     </script>
-    <script type="text/javascript" src="../script/comm.js"></script>
-    <script type="text/javascript" src="../script/doT.min.js"></script>
-    <script type="text/javascript" src="../script/caicui.js"></script>
-    <script type="text/javascript" src="../script/db.js"></script>
-    <script type="text/javascript" src="../script/saveTasksProgress.js"></script>
-    <script type="text/javascript" src="../script/pagejs/video-menu.js"></script>
+    <script type="text/javascript" src="../script/pagejs/tasks-cache-f.js"></script>
   </body>
 </html>

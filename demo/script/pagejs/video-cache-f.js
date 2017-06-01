@@ -1,3 +1,10 @@
+var getStatusTime = null;
+var videoDownInfo =new Object(); //缓存每个节点的下载状态，一个节点一个id
+var videochangelist = $api.getStorage("videochangelist") ? $api.getStorage("videochangelist") : "";; //记录每次定时器和数据库同步数据后发生改变的dom节点id
+var couselist = ""; //记录缓存包括的课程id
+var lastgettime = 1388509261;//记录每次获取数据库的时间点，下次获取就只获取该时间点之后变化的记录(第一次获取可以获取2014年1月1日1时1分1秒//)
+
+
 function init_check(){
     $('.cache-list .icon-check').click(function(){
         if($(this).hasClass('active')){
@@ -65,6 +72,39 @@ function init_check(){
             }
         }
     });
+    $(".tasksCache").on("click",function(e){
+        if(e.target && e.target.nodeName == "I"){
+            return false;
+        }
+        clearInterval(getStatusTime);
+        var to_cacheHeight = 0;
+        var to_cacheState =false;
+        var chapterId = $(this).attr("data-chapId");
+        var courseId = $(this).find(".down-progress").attr("courseid");
+        if(api.pageParam.courseId){
+            to_cacheHeight =84;
+            to_cacheState = true;
+        }
+        if(api.systemType != "ios" && api.pageParam.courseId){
+            to_cacheHeight = 55;
+        }
+        api.openFrame({
+              delay:200,
+              name : "tasks-cache",
+              url : 'tasks-cache.html',
+              bgColor: '#fff',
+              rect: {
+                  x: leftLw,
+                  y: to_cacheHeight,
+                  w: api.winWidth - leftLw,
+                  h: api.winHeight - headLh
+                },
+              pageParam:{chapterId:chapterId,courseId:courseId,to_cacheState:to_cacheState},
+              bounces: false
+          });
+        
+        
+    })
 }
 //统计每个章节的各种任务个数，参数num1表示一级章节，参数num2表示二级章节
 function countTaskType(course_detail, num1, num2) {
@@ -134,6 +174,9 @@ function init_data() {
     get_percent();
     circleProgress();
     init_check();
+    if(api.pageParam.courseId){
+        $(".cache-list dl,.cache-list dl.haschild").css({"padding-left":"0.3rem"});
+    }
     //圆形进度条绘制
     $.each($('.down-progress'), function(k, v) {
         var num = parseInt($(v).find('.val').html());
@@ -176,57 +219,400 @@ function init_data() {
     api.hideProgress();
 }
 function get_data() {
-    mydata=[];
     $('body').removeClass('checking');
-    setTimeout(function(){
-        api.hideProgress();
-        api.refreshHeaderLoadDone();
-    },100);
     /*后台代码*/
-    var data = $api.getStorage(memberId + 'video-buffer');
-    if (isEmpty(data) || data.length ==0) {//没有下载列表
-        api.hideProgress();
-        $('#content').html('');
-        $('body').addClass('null');
-        return false;
-    }
-    var len = data.length;
-    function set_data(num) {
-        //if (isEmpty(api.pageParam.courseId)) {//全部缓存列表
-            read_file(memberId + data[num] + '.db', function(ret, err) {
-                if (ret) {
-                    var ret_data = JSON.parse(ret.data);
+     memberId = getstor('memberId');
+    mydata = [];
+    set_data(0);
+}
+function set_data(num) {    
+
+    //1:获取所有下载记录并解析
+    getdownrecord();
+    //2:根据couselist获取所有缓存课程的章节详情，如果在线，从服务器获取，否则本地数据库获取
+    initDom();
+    clearInterval(getStatusTime);
+    getStatusTime = setInterval(function(){
+        if($api.getStorage("video-cacheTime") == "false"){
+            clearInterval(getStatusTime);
+        }
+        getdownrecord();
+    },1000)
+
+}
+//测试
+// mydata = [];
+// var aa={"courseJson":"[{\"availability\":\"<p>\\r\\n\\tCMA P1 中文 前导讲义有更新，更新章节：\\r\\n</p>\\r\\n<p>\\r\\n\\t第1章-第1节-知识点1\\r\\n</p>\\r\\n<p>\\r\\n\\t<span style=\\\"line-height:1.5;\\\">第1章-第2节-知识点2</span> \\r\\n</p>\\r\\n第3章-第1节-知识点1<br />\",\"courseBackgroundImage\":\"/upload/201604/92da0abdac4a45f5b46f9546ade771ac.jpg\",\"categoryName\":\"CMA中文\",\"courseIndex\":130,\"knowledgePointId\":\"\",\"teacherName\":\"QiQi Wu\",\"chapters\":[{\"chapterId\":\"8a22ecb553eab1280153f3774d3a0080\",\"isFree\":\"true\",\"knowledgePointId\":null,\"chapterTitle\":\"第一章 管理会计基础\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb553eab1280153f38a4e240087\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"前导\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540452360300b6\",\"videoCcid\":\"1636D8924AA82ED29C33DC5901307461\",\"videoTime\":256,\"taskType\":\"video\",\"title\":\"前导课\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044018bd009a\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f384b5c30084\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第一节 管理会计的产生与发展\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b428d7faa063d\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 管理会计的产生\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540468f39800ba\",\"videoCcid\":\"72D12CCB7EBFE95C9C33DC5901307461\",\"videoTime\":1263,\"taskType\":\"video\",\"title\":\"知识点1 管理会计的形成\",\"taskLevel\":null,\"id\":\"8a22ecb553eab128015404410a66009c\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201703/ca2b169f8e9b4baf8106ce21e62e0b74.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b428db65c063e\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点2 管理会计的发展\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab128015404696af800bb\",\"videoCcid\":\"15F603BEEC1D737C9C33DC5901307461\",\"videoTime\":1157,\"taskType\":\"video\",\"title\":\"知识点2 管理会计的发展\",\"taskLevel\":null,\"id\":\"8a22ecb553eab12801540441487a009d\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/78b9c138f43246ecafe3c0cf1303a6c4.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3857f2f0085\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第二节 管理会计和财务会计的关系\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b428dfb64063f\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 管理会计和财务会计的区别\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154046a01eb00bc\",\"videoCcid\":\"224E39210AD2ED299C33DC5901307461\",\"videoTime\":1295,\"taskType\":\"video\",\"title\":\"知识点1 管理会计和财务会计的区别\",\"taskLevel\":null,\"id\":\"8a22ecb553eab12801540445c98000a0\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/6a7cd4b8b89343479c927b179d5b1b4b.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b428e3c470640\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点2 管理会计和财务会计的联系\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154046a5cca00bd\",\"videoCcid\":\"619E2E8F9E67C7069C33DC5901307461\",\"videoTime\":773,\"taskType\":\"video\",\"title\":\"知识点2 管理会计和财务会计的联系\",\"taskLevel\":null,\"id\":\"8a22ecb553eab128015404461e5b00a1\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201703/a8f4ea0173c64b23b54a85b0cdb1283b.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f386da630086\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第三节 管理会计的职能与目标\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b428e96a00641\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 管理会计的目标\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab128015404717e5d00be\",\"videoCcid\":\"64D4A4A6C6DFEFDB9C33DC5901307461\",\"videoTime\":657,\"taskType\":\"video\",\"title\":\"知识点1 管理会计的目标\",\"taskLevel\":null,\"id\":\"8a22ecb553eab12801540441c9c9009e\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/3f96ba19658747d3b96bb0db2c265a35.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b428ee9ae0642\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点2 管理会计的职能\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540472130c00bf\",\"videoCcid\":\"CF1338E6CCBD08BE9C33DC5901307461\",\"videoTime\":1534,\"taskType\":\"video\",\"title\":\"知识点2 管理会计的职能\",\"taskLevel\":null,\"id\":\"8a22ecb553eab128015404424d88009f\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/caca3dcb54ed444cb0c8659907c4a51d.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3ada7730088\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第四节 管理会计的基本原则\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b428f72b40643\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 管理会计的基本原则\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154047a85fd00c0\",\"videoCcid\":\"597686C27C1E399E9C33DC5901307461\",\"videoTime\":974,\"taskType\":\"video\",\"title\":\"知识点1 管理会计的基本假设和原则\",\"taskLevel\":null,\"id\":\"8a22ecb553eab128015404472fdc00a4\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/b9ce17fb3dca44a39cb4a2d7ac07d1bc.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f37e94c40082\",\"isFree\":\"true\",\"knowledgePointId\":null,\"chapterTitle\":\"第二章 成本会计基础\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb553eab1280153f3aeb5a00089\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"前导\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154047b2ac200c1\",\"videoCcid\":\"12D3532E116F451E9C33DC5901307461\",\"videoTime\":236,\"taskType\":\"video\",\"title\":\"前导课\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044ce58d00af\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3af23ec008a\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第一节 成本的概述\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b428fc3050644\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 成本的概述\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154047c42aa00c2\",\"videoCcid\":\"046063D29FF4BB029C33DC5901307461\",\"videoTime\":1228,\"taskType\":\"video\",\"title\":\"知识点1 成本的概述\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044dc65c00b0\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/1190b1db4b4b4c94bd2cb72f57c43b25.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3afdeb0008b\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第二节 成本分类\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b42900abd0645\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 财务会计中的成本分类\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154047dc29300c3\",\"videoCcid\":\"CFD7A741EC682FA29C33DC5901307461\",\"videoTime\":1234,\"taskType\":\"video\",\"title\":\"知识点1 财务会计中成本的分类\",\"taskLevel\":null,\"id\":\"8a22ecb55aeff242015b14aa07ca0338\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b429045f60646\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点2 成本性态分析\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540481f60200c4\",\"videoCcid\":\"E541DE80C943D0819C33DC5901307461\",\"videoTime\":1310,\"taskType\":\"video\",\"title\":\"知识点2 成本性态分析\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044e95e100b2\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201704/1692af46a74946afa94c1e82b277254d.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b42909bf60647\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点3 短期决策下的成本概念\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540482853a00c5\",\"videoCcid\":\"4D61D12747687DF99C33DC5901307461\",\"videoTime\":1315,\"taskType\":\"video\",\"title\":\"知识点3 短期决策下的成本概念-1\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044eff7200b4\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/223feb776d5a4ff3b36a16a36977d194.pdf\",\"express\":null},{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540482b1a900c6\",\"videoCcid\":\"B9AD8B8C5F613F059C33DC5901307461\",\"videoTime\":803,\"taskType\":\"video\",\"title\":\"知识点3 短期决策下的成本概念-2\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044f381100b5\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f37f16340083\",\"isFree\":\"true\",\"knowledgePointId\":null,\"chapterTitle\":\"第三章 财务会计基础\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb553eab1280153f3b0337b008c\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"前导\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab128015404832d2300c7\",\"videoCcid\":\"C9875EB0FC628EC09C33DC5901307461\",\"videoTime\":303,\"taskType\":\"video\",\"title\":\"前导课\",\"taskLevel\":null,\"id\":\"8a22ecb553eab12801540447e63100a5\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3b28f04008d\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第一节 财务会计概述\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b4290e0d00648\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 财务会计的基本要素\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540483c08200c8\",\"videoCcid\":\"9FEC4E4EFA2461F19C33DC5901307461\",\"videoTime\":869,\"taskType\":\"video\",\"title\":\"知识点1 财务会计的基本要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044a5a8400a7\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201703/a1af2e68aa4648cba8be16406e71d8c6.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null},{\"chapterId\":\"8a22ecb553eab1280153f3b3983e008e\",\"isFree\":\"false\",\"knowledgePointId\":null,\"chapterTitle\":\"第二节 会计要素的分类\",\"isLeaf\":\"false\",\"tasks\":null,\"chapterFiles\":null,\"children\":[{\"chapterId\":\"8a22ecb55b1ec7e9015b429110200649\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点1 资产要素\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab1280154048549a100c9\",\"videoCcid\":\"E6F24766709759E59C33DC5901307461\",\"videoTime\":957,\"taskType\":\"video\",\"title\":\"知识点1 资产要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044af56d00a8\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201705/fcfa40b606db404895be16f1b2053f79.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b42914044064a\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点2 负债要素\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540485b5ff00ca\",\"videoCcid\":\"429903A1FCE4237E9C33DC5901307461\",\"videoTime\":677,\"taskType\":\"video\",\"title\":\"知识点2 负债要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044b8c0200aa\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/3bfd1a77c7184f0ea7be9af76c834578.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b42917097064b\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点3 所有者权益\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540486417500cb\",\"videoCcid\":\"35D1EBCCC9D174539C33DC5901307461\",\"videoTime\":716,\"taskType\":\"video\",\"title\":\"知识点3 所有者权益要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044bc61700ab\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/a57911a75fef471694d44e9dd75cfded.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b4291a30f064c\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点4 收入要素\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab128015404868b2800cc\",\"videoCcid\":\"9FC98FC38164DD1B9C33DC5901307461\",\"videoTime\":594,\"taskType\":\"video\",\"title\":\"知识点4 收入要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044c22a700ad\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/592693fe6b234ed49f4a90c48cc4b132.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null},{\"chapterId\":\"8a22ecb55b1ec7e9015b4291d20a064d\",\"isFree\":\"false\",\"knowledgePointId\":\"\",\"chapterTitle\":\"知识点5 费用和利润类要素\",\"isLeaf\":\"true\",\"tasks\":[{\"apiKey\":\"q6pLhLMSit3QuuYAD4TIyQ3pJNKiY0Ez\",\"taskId\":\"8a22ecb553eab12801540486cce400cd\",\"videoCcid\":\"84DFF8BDDE292B079C33DC5901307461\",\"videoTime\":1153,\"taskType\":\"video\",\"title\":\"知识点5 费用和利润类要素\",\"taskLevel\":null,\"id\":\"8a22ecb553eab1280154044c7d9e00ae\",\"videoSiteId\":\"D550E277598F7D23\",\"attachmentPath\":\"/upload/201702/c18f86bb73c44a7ca2469e88136423d6.pdf\",\"express\":null}],\"chapterFiles\":null,\"children\":null,\"chapterExtends\":null}],\"chapterExtends\":null}],\"chapterExtends\":null}],\"bigCoverPath\":\"/upload/201507/32b2575cc3094dde8461f32731ea3058.png\",\"subjectName\":\"CMA 中文 Part-1\",\"outline\":\"\",\"aim\":\"P1前导课主要学习管理会计、财务会计、成本会计的基础知识，前导课偏重基础知识的理解，要求重点掌握管理会计与财务会计的联系与区别，分别从管理会计和财务会计的角度理解并记忆成本的分类，以及财务报表的六大要素\",\"versionId\":\"ff808081491181a3014917d1bec90762\",\"effectiveDay\":280,\"coverPath\":\"/upload/201604/92da0abdac4a45f5b46f9546ade771ac.jpg\",\"teacherImage\":\"/upload/201606/09c9342818e24393a970aa93d25b9a4d.png\",\"courseModuleType\":\"KNOWLEDGE_MODULE\",\"subjectId\":\"ff808081486933e601489c799f0f0868\",\"courseId\":\"8a22ecb553eab1280153f36f380a007f\",\"courseName\":\"CMA Part I 中文 前导\",\"lastModifyTime\":1460078,\"taskNum\":\"21\",\"taskTotal\":\"21\",\"createTime\":1460078065,\"chapterNum\":\"48\",\"teacherHonor\":\"吴奇奇\",\"subjectIndex\":50,\"categoryId\":\"ff808081486933e601489c4662f60851\",\"categoryIndex\":10}]"}
+
+// var ret_data = JSON.parse(aa.courseJson);
+// var res = {
+//     data: ret_data[0]
+// };
+// mydata.push(res); 
+// var tpl = $('#tpl').html();
+//     var content = doT.template(tpl)(mydata);
+//     $('body').removeClass('null');
+//     $('#content').html('');
+//     $('#content').html(content);
+function initDom() {
+    cache_model = api.require('lbbVideo');
+        var param = {"userId":memberId};
+        if(api.pageParam.courseId){
+            param.courseId = api.pageParam.courseId;
+            $("#header").show();
+            $('#content').css({"padding-top":"1.25rem"});
+        }
+
+           cache_model.getCourseJsonWithCourseId(param,function(ret,err){ 
+
+               if(JSON.parse(ret.data).length<1){
+                    $('#content').html('');
+                    $('body').addClass('null');
+                    api.hideProgress();
+                    return false;
+               }
+                $.each(JSON.parse(ret.data),function(k,v){
+                    var ret_data = JSON.parse(v.courseJson);
                     var res = {
-                        data : ret_data
+                        data: ret_data[0]
                     };
-                    mydata.push(res);
-                    if (num < len-1) {
-                        num++;
-                        set_data(num);
-                    } else {
-                        init_data();
-                    }
+                    mydata.push(res); 
+                    
+                })
+                
+                init_data();
+                initDomDownStatus();
+                //处理圈圈
+                isSolidcircle('circle', '', '');
+                showCacheList();
+
+           })
+        }
+
+function initDomDownStatus(){
+        if(isEmpty($api.getStorage("videochangelist"))){
+            return false;
+        }
+        var strs = $api.getStorage("videochangelist").split(","); //字符分割
+        var pathlen = strs.length;
+    
+        //从1开始，因为拼接videochangelist的时候用,开始的
+    //     alert(strs+"====="+JSON.stringify(videoDownInfo))
+        for (j=1; j<pathlen;j++ ){
+            var domInfo = videoDownInfo[strs[j]];
+            var domid = strs[j];
+            // alert(JSON.stringify(domInfo))
+            if(!isEmpty(domInfo)){
+                var domprogress = videoDownInfo[strs[j]].progress;
+                var domstatus = videoDownInfo[strs[j]].status;
+                var domtasknum = videoDownInfo[strs[j]].tasknum;
+//               alert(domid+"==="+domprogress+"==="+domstatus)
+                // ------------------设置界面对应id节点dom下载状态，并设置为可见--------------------------
+                
+                $("#course"+domid).find(".progress-bar2").css("width",domprogress.toFixed(2)+"%");
+                $("#course"+domid).find(".progress-val2").text(domprogress.toFixed(2)+"%");
+                
+                $(".task"+domid).attr("type",domstatus);
+                $(".task"+domid).find(".val").html(domprogress);
+                // alert($(".task"+domid).html())
+            }    
+        }
+        setCapterState();
+        
+        init_process();
+        //    ------------------设置结束--------------------------
+    
+       
+
+        
+    }
+    function setCapterState(){
+        $.each($(".tasksBoxs"),function(k,v){
+             var waitNum = 0,
+                 ingNum = 0,
+                 okNum = 0,
+                 stopNum = 0;
+            var taskList = $(v).prev(".list").find(".down-progress");
+            var len =0;
+            $.each($(v).find(".down-progress"),function(key,val){
+                if($(val).attr("type") == 1){
+                     ingNum++;
+                 }else if($(val).attr("type") == 2){
+                     stopNum++;
+                 }else if($(val).attr("type") == 5){
+                     waitNum++;
+                 }else if($(val).attr("type") == 4){
+                     okNum++;
+                 }
+            });
+            if(ingNum>0){
+                 taskList.attr("type",1);                
+             }else if(waitNum>0 || stopNum>0){
+                 taskList.attr("type",2);
+             }else if(ingNum<1 && (waitNum<1 || stopNum<1) && okNum>0){
+                 taskList.attr("type",4);
+             }
+             // taskList.html(domprogress);
+        })
+
+    }
+function showCacheList(){
+    $.each($(".cache-course"),function(kk,vv){
+        if( $(vv).find(".mycaptC").length>0 && $(vv).find(".mycaptB").length>0 && $(vv).find(".mycaptA").length>0 ){
+           showCaptCFn($(vv));
+           showCaptBFn($(vv));
+           showCaptAFn($(vv));
+           showCourseFn($(vv)); 
+        }else if( $(vv).find(".mycaptC").length<1 && $(vv).find(".mycaptB").length>0 && $(vv).find(".mycaptA").length>0){
+            showCaptCFn2($(vv));
+            showCaptBFn2($(vv));
+            showCourseFn2($(vv));   
+        }else if( $(vv).find(".mycaptC").length<1 && $(vv).find(".mycaptB").length<1 && $(vv).find(".mycaptA").length>0 ){
+            showCaptCFn3($(vv));
+            showCourseFn3($(vv));
+        }
+        
+    })
+}
+
+function showCaptCFn(obj){
+    
+    $.each(obj.find(".mycaptC"),function(k,v){
+//      if($(v).css("display") != "none"){
+            var taskList = $(v).next(".tasksBoxs").find(".taskList");
+            var len =0;
+            $.each(taskList,function(key,val){
+//              alert($(val).find(".down-progress").attr("type"))
+                if($(val).find(".down-progress").attr("type") == 1){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 2){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 5){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 4){
+                    len++;
                 }
             });
-        //} else {//某个课程缓存列表
-            //if(!isEmpty(data) && !in_array(api.pageParam.courseId,data)){
-            //    $('#content').html('');
-            //    $('body').addClass('null');
-            //    return false;
-            //}
-            //read_file(memberId + api.pageParam.courseId + '.db', function(ret, err) {
-            //    if (ret) {
-            //        var ret_data = JSON.parse(ret.data);
-            //        var res = {
-            //            data : ret_data
-            //        };
-            //        mydata.push(res);
-            //        init_data();
-            //    }
-            //});
-        //}
+            //alert(len)
+            if(len>0){
+                $(v).show();
+            }else{
+                $(v).hide();
+            }
+//      }
+    })
+    
+}
+function showCaptBFn(obj){
+    $.each(obj.find(".mycaptB"),function(k,v){
+//      if($(v).css("display") != "none"){
+            var mycaptCList = $(v).find(".mycaptC");
+            var len =0;
+            $.each(mycaptCList,function(key,val){
+                if($(this).css("display") != "none"){
+                    len++;
+                }
+            });
+            if(len>0){
+                $(v).show();
+            }else{
+                $(v).hide();
+            }
+//      }
+    })
+}
+function showCaptAFn(obj){
+    $.each(obj.find(".mycaptA"),function(k,v){
+        
+        var mycaptBList = $(v).find(".mycaptB");
+        if(mycaptBList.length>0){
+            var len =0;
+            $.each(mycaptBList,function(key,val){
+                if($(this).css("display") != "none"){
+                    len++;
+                }
+            });
+            
+            if(len>0){
+                $(v).show();
+            }else{
+                $(v).hide();
+            }
+        }else{
+            var taskList = $(v).next(".tasksBoxs").eq(0).find(".taskList");
+            var len =0;
+            $.each(taskList,function(key,val){
+//              alert($(val).find(".down-progress").attr("type"))
+                if($(val).find(".down-progress").attr("type") == 1){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 2){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 5){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 4){
+                    len++;
+                }
+            });
+            //alert(len)
+            if(len>0){
+                $(v).show();
+            }else{
+                $(v).hide();
+            }
+        }
+        
+    })
+}
+function showCourseFn(obj){
+    
+    $.each(obj,function(k,v){
+        var mycaptAList = $(v).find(".mycaptA");
+        var len =0;
+        $.each(mycaptAList,function(key,val){
+            if($(this).css("display") != "none"){
+                len++;
+            }
+        });       
+        if(len>0){
+            $(v).show();
+        }else{
+            $(v).hide();
+        }
+    })
+    noCache();
+}
+
+function noCache(){
+    var courseNum = 0;
+    $.each($(".cache-course"),function(kk,vv){
+        if($(this).css("display") != "none"){
+            courseNum++;
+        }else{
+            cache_model = api.require('lbbVideo');
+
+            cache_model.deleteCourseJson({
+                "userId" : getstor('memberId'),
+                "courseId" : $(this).find(".courseid").attr("dataid")
+            },function(){
+
+            }) 
+        }
+    });
+    
+    if(courseNum<1){
+        $('#content').html('');
+        $('body').addClass('null');
+        
+        return false;
     }
-    set_data(0);
+}
+
+function showCaptCFn2(obj){
+    $.each(obj.find(".mycaptB"),function(k,v){
+//      if($(v).css("display") != "none"){
+            var taskList = $(v).find(".tasksBoxs").eq(0).find(".taskList");
+            var len =0;
+            $.each(taskList,function(key,val){
+//              alert($(val).find(".down-progress").attr("type"))
+                if($(val).find(".down-progress").attr("type") == 1){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 2){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 5){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 4){
+                    len++;
+                }
+            });
+            if(len>0){
+                $(this).show();   
+            }else{
+                $(this).hide();
+            }
+//      }
+    })  
+}
+function showCaptBFn2(obj){
+    $.each(obj.find(".mycaptA"),function(k,v){
+//      if($(v).css("display") != "none"){
+            var mycaptCList = $(v).find(".mycaptB");
+            var len =0;
+            $.each(mycaptCList,function(key,val){
+                if($(this).css("display") != "none"){
+                    len++;
+                }
+            });
+            if(len>0){
+                $(v).show();
+            }else{
+                $(v).hide();
+            }
+//      }
+    })
+}
+function showCourseFn2(obj){
+    
+    $.each(obj,function(k,v){
+        var mycaptAList = $(v).find(".mycaptA");
+        var len =0;
+        $.each(mycaptAList,function(key,val){
+            if($(this).css("display") != "none"){
+                len++;
+            }
+        });       
+        if(len>0){
+            $(v).show();
+        }else{
+            $(v).hide();
+        }
+    })
+    noCache();
+}
+
+//种类三
+function showCaptCFn3(obj){
+    $.each(obj.find(".mycaptA"),function(k,v){
+//      if($(v).css("display") != "none"){
+            var taskList = $(v).next(".tasksBoxs").find(".taskList");
+            var len =0;
+            $.each(taskList,function(key,val){
+//              alert($(val).find(".down-progress").attr("type"))
+                if($(val).find(".down-progress").attr("type") == 1){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 2){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 5){
+                    len++;
+                }else if($(val).find(".down-progress").attr("type") == 4){
+                    len++;
+                }
+            });
+            if(len>0){
+                $(this).show();   
+            }else{
+                $(this).hide();
+            }
+//      }
+    })  
+}
+
+function showCourseFn3(obj){
+    
+    $.each(obj,function(k,v){
+        var mycaptAList = $(v).find(".mycaptA");
+        var len =0;
+        $.each(mycaptAList,function(key,val){
+            if($(this).css("display") != "none"){
+                len++;
+            }
+        });       
+        if(len>0){
+            $(v).show();
+        }else{
+            $(v).hide();
+        }
+    })
+    noCache();
 }
 function get_input(name) {
     var data = [];
@@ -441,6 +827,18 @@ apiready = function() {
     memberId=getstor('memberId');
     mydata = [];
     get_data();
+     
+    api.addEventListener({
+        name: 'flush_cache'
+    }, function(ret, err) {
+        $('body').removeClass('checking');
+        $('.icon-check').removeClass('active');
+        clearInterval(getStatusTime);
+        getStatusTime = setInterval(function(){
+            getdownrecord();
+        },2000)
+
+    });
     api.addEventListener({
         name : 'down_speed'
     }, function(ret) {
@@ -481,229 +879,74 @@ apiready = function() {
         textUp : '松开刷新',
         showTime : false
     }, function(ret, err) {
-        mydata = [];
-        get_data();
+       api.hideProgress();
+        api.refreshHeaderLoadDone();
+        location.reload();
+        if($(".cache-course").length<1){
+            $('#content').html('');
+            $('body').addClass('null');
+            return false;
+        }
     });
+    api.addEventListener({
+          name: 'cancle_check'
+      }, function () {
+          $("#content").find('.icon-check').removeClass('active'); 
+      });
     //1 删除  2 取消  3 批量移除
     api.addEventListener({
-        name : 'opena'
+        name : 'openachapt'
     }, function(ret) {
         if (ret.value.sethomepage == 3) {//删除
             $('body').addClass('checking');
-            var courseid = get_input('courseid');
-            var chaptera = get_input('chaptera');
-            var chapterb = get_input('chapterb');
-            var chapterc = get_input('chapterc');
-            var downed = isEmpty($api.getStorage(memberId + 'downed')) ? '' : $api.getStorage(memberId + 'downed');
-            if ((isEmpty(courseid) && isEmpty(chaptera) && isEmpty(chapterb) && isEmpty(chapterc)) || isEmpty(mydata)) {
-                api.toast({
-                    msg:'没有选择删除对象',
-                    location:'middle'
-                });
-                $('.icon-check').removeClass('active').attr('sel', 0);
-                $('body').removeClass('checking');
-                return false;
-            }
-            api.showProgress({
-                title : '删除中',
-                modal : true
-            });
-            var Queue;
-            read_file(memberId + 'Queue.db', function(res, err) {
-                if (res.status && res.data) {
-                    Queue = JSON.parse(res.data);
-                    for (var p in mydata) {
-                        if (!isEmpty(mydata[p]['data'][0]['courseId']) && in_array(mydata[p]['data'][0]['courseId'], courseid)) {//删除整个课程对应的记录
-                            var obj_data = $api.getStorage(memberId + 'video-buffer');
-                            for (var x in obj_data) {
-                                if (obj_data[x] == mydata[p]['data'][0]['courseId']) {
-                                    obj_data.splice(x, 1);
-                                    break;
-                                }
-                            }
+              var ccids = [];
 
-                                if (downed) {
-                                    if(!isEmpty(api.pageParam.courseId) &&  api.pageParam.courseId==mydata[p]['data'][0]['courseId']){
-                                    is_del_downed=true;
-                                    var jsfun = "down_stop(function(){});";
-                                        api.execScript({
-                                            name: 'root',
-                                            script: jsfun
-                                        });
-                                    }
-                                    if( in_array(downed['courseId'], courseid)){//全部课程删除某一课程
-                                        is_del_downed = true;
-                                        var jsfun = 'down_stop(function(){});';
-                                        api.execScript({
-                                            name: 'root',
-                                            script: jsfun
-                                        });
-                                    }
-                                }
-                            $api.setStorage(memberId + 'video-buffer', obj_data);
-                        }
-                        if (!isEmpty(mydata[p]['data'][0]['chapters'])) {
-                            for (var n in mydata[p]['data'][0]['chapters']) {
-                                if (!isEmpty(mydata[p]['data'][0]['chapters'][n]['chapterId']) && in_array(mydata[p]['data'][0]['chapters'][n]['chapterId'], chaptera)) {//删除一级章节对应记录
-                                    for (var v in Queue) {
-                                        if ((!isEmpty(Queue[v]['chapterIdA']) && Queue[v]['chapterIdA'] == mydata[p]['data'][0]['chapters'][n]['chapterId']) || (!isEmpty(Queue[v]['chapterida']) && Queue[v]['chapterida'] == mydata[p]['data'][0]['chapters'][n]['chapterId']) ) {
-                                            Queue.splice(v, 1);
-                                            break;
-                                        }
-                                    }
-                                    if (downed) {
-                                        var chapterA = downed['chapterIdA'];
-                                        if (!isEmpty(mydata[p]['data'][0]['chapters'][n]) &&!isEmpty(mydata[p]['data'][0]['chapters'][n]['chapterId'])&& mydata[p]['data'][0]['chapters'][n]['chapterId'] == chapterA) {
-                                            is_del_downed=true;
-                                            var jsfun = 'down_stop("",function(){});';
-                                            api.execScript({
-                                                name: 'root',
-                                                script: jsfun
-                                            });
-                                        }
-                                    }
-                                    var capA = memberId + mydata[p]['data'][0]['chapters'][n]['chapterId'] + 'progress';
-                                    $api.rmStorage(capA);//一级章节删除
-                                }
-                                //二级章节存在
-                                if (!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'])) {
-                                    for (var q in mydata[p]['data'][0]['chapters'][n]['children']) {
-                                        if (!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId']) && in_array(mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId'], chapterb)) {//删除二级章节下载记录
-                                            for (var s in Queue) {
-                                                if ((!isEmpty(Queue[s]['chapterIdB']) && Queue[s]['chapterIdB'] == mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId']) || (!isEmpty(Queue[s]['chapteridb']) && Queue[s]['chapteridb'] == mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId'])) {
-                                                    Queue.splice(s, 1);
-                                                    break;
-                                                }
-                                            }
-                                            if (downed) {
-                                                var chapterB = downed['chapterIdB'];
-                                                if (!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId']) && mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId'] == chapterB) {
-                                                    is_del_downed=true;
-                                                    var jsfun = "down_stop(function(){});";
-                                                    api.execScript({
-                                                        name: 'root',
-                                                        script: jsfun
-                                                    });
-                                                }
-                                            }
-                                            $api.rmStorage(memberId + mydata[p]['data'][0]['chapters'][n]['children'][q]['chapterId'] + 'progress');//B
-                                        }
-                                        //三级章节存在
-                                        if(!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'][q]['children'])){
-                                            for(var u in mydata[p]['data'][0]['chapters'][n]['children'][q]['children']){
-                                                if(!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId']) && in_array(mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId'],chapterc)){
-                                                    for (var y in Queue) {
-                                                        if ((!isEmpty(Queue[y]['chapterIdC']) && Queue[y]['chapterIdC'] == mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId']) || (!isEmpty(Queue[y]['chapteridc']) && Queue[y]['chapteridc'] == mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId'])) {
-                                                            Queue.splice(y, 1);
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (downed) {
-                                                        var chapterC = downed['chapterIdC'];
-                                                        if (!isEmpty(mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId']) && mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId'] == chapterC) {
-                                                            is_del_downed=true;
-                                                            var jsfun = "down_stop(function(){});";
-                                                            api.execScript({
-                                                                name: 'root',
-                                                                script: jsfun
-                                                            });
-                                                        }
-                                                    }
-                                                    $api.rmStorage(memberId + mydata[p]['data'][0]['chapters'][n]['children'][q]['children'][u]['chapterId'] + 'progress');//C
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+              $.each($(".tasksBoxs"),function(k,v){
+                
+                var checkFath = $(v).prev("li").find(".icon-check");
+                if(checkFath.hasClass("active")){
+                    
+                    var videoArr = $(v).find(".taskList");
+                    $.each(videoArr,function(key,val){
+                        var taskID = JSON.parse($(val).find(".down_data").html()).videoCcid;
+                        ccids.push(taskID);        
+                     })
                 }
-                write_file(memberId + 'Queue.db', JSON.stringify(Queue), function(ret, err) {
-                    //队列内容删除完毕删除下载视频内容
-                    var ccids = [];
-                    $.each($('.down_data'), function(k, v) {
-                        if ($(v).siblings('.icon-check').hasClass('active') && $(v).parents('.mycaptB').not('.none')) {
-                            var down_data = JSON.parse($.trim($(v).html()));
-                            var course_obj = $(v).siblings('.down-progress');
-                            var CourseId = course_obj.attr('courseid');
-                            var chapterIdA = course_obj.attr('chapterida');
-                            var chapterIdB = course_obj.attr('chapteridb');
-                            var chapterIdC = course_obj.attr('chapteridc');
-                            for (var p in down_data) {
-                                if (down_data[p]['taskType'] == 'video') {
-                                    var data = isEmpty($api.getStorage('cahce_data'+memberId + CourseId)) ? '' : $api.getStorage('cahce_data'+memberId + CourseId);
-                                    if (data && typeof data[chapterIdA] != "undefined" &&
-                                        typeof data[chapterIdA][down_data[p]['videoCcid']] != "undefined" )
-                                    {
-                                        delete data[chapterIdA][down_data[p]['videoCcid']];
-                                    }
-                                    if (data && typeof data[chapterIdA] != "undefined" &&
-                                        typeof data[chapterIdA][chapterIdB] != "undefined" &&
-                                        typeof data[chapterIdA][chapterIdB][down_data[p]['videoCcid']] != "undefined")
-                                    {
-                                        delete data[chapterIdA][chapterIdB][down_data[p]['videoCcid']];
-                                    }
-                                    if (data && typeof data[chapterIdA] != "undefined" &&
-                                        typeof data[chapterIdA][chapterIdB] != "undefined" &&
-                                        typeof data[chapterIdA][chapterIdB][chapterIdC] != "undefined"&&
-                                        typeof data[chapterIdA][chapterIdB][chapterIdC][down_data[p]['videoCcid']] != "undefined"
-                                    )
-                                    {
-                                        delete data[chapterIdA][chapterIdB][chapterIdC][down_data[p]['videoCcid']];
-                                    }
-                                    $api.setStorage('cahce_data'+memberId + CourseId, data);
+                
+             })
 
-                                    ccids.push(down_data[p]['videoCcid']);
-                                }
-                            }
-                        }
-                    });
-                    if(!isEmpty(ccids)){
-                        var jsfun = "rmVideo('"+JSON.stringify(ccids)+"');";
-                        api.execScript({
-                            name: 'root',
-                            script: jsfun
-                        });
+            if(ccids.length<1){ return false; };
+//          var jsfun = 'down_stop(function(){});';
+//          api.execScript({
+//              name: 'root',
+//              script: jsfun
+//          });
+             api.showProgress({
+                 title: '删除中',
+                 modal: true
+             });
+             
+             var jsfun = "rmVideo('" + JSON.stringify(ccids) + "');";
+             api.execScript({
+                name: 'root',
+                script: jsfun
+             });
+             //获取新内容
+             setTimeout(function() {
+                $.each($(".down-progress"),function(k,v){
+                    if($(v).prev(".icon-check").hasClass("active")){
+                        $(v).closest("li").hide();
                     }
-                    setTimeout(function(){
-                        var mydowned = isEmpty($api.getStorage(memberId + 'downed')) ? '' : $api.getStorage(memberId + 'downed');
-                        if(is_del_downed && mydowned){
-                            var chapterIdA = isEmpty(mydowned['chapterIdA']) ? '': mydowned['chapterIdA'];
-                            var chapterIdB = isEmpty(mydowned['chapterIdB']) ? '': mydowned['chapterIdB'];
-                            var chapterIdC = isEmpty(mydowned['chapterIdC']) ? '': mydowned['chapterIdC'];
-                            if (cache_model == null) {
-                                cache_model = api.require('lbbVideo');
-                            }
-                            cache_model.downloadStop(function(ret, err) {
-                              
-                                //一级章节下载记录
-                                if(!isEmpty(chapterIdA) && isEmpty(chapterIdB) && isEmpty(chapterIdC)){
-                                    $api.rmStorage(memberId + chapterIdA+'progress');
-                                }
-                                //二级章节下载记录
-                                if(!isEmpty(chapterIdA) && !isEmpty(chapterIdB) && isEmpty(chapterIdC)){
-                                    $api.rmStorage(memberId + chapterIdB+'progress');
-                                }
-                                //三级章节下载记录
-                                if(!isEmpty(chapterIdC) && !isEmpty(chapterIdA) && !isEmpty(chapterIdB)){
-                                    api.rmStorage(memberId + chapterIdC+'progress');
-                                }
-                                $api.rmStorage(memberId + 'downed')
-                            });
-                        }
-                        api.sendEvent({
-                            name : 'flush_cache'
-                        });
-                        api.sendEvent({
-                            name : "cancle_del"
-                        });
-                        //获取新内容
-                        mydata = [];
-                        get_data();
-                    },2000);
-                });
-            });
+                 })
+                api.hideProgress();
+                 // api.sendEvent({
+                 //    name: "cancle_del"
+                 // });
+
+                  $('body').removeClass('checking');
+                  $('.icon-check').removeClass('active');           
+                
+             },1000)
         } else if (ret.value.sethomepage == 2) {//取消
             $('body').removeClass('checking');
             $('.icon-check').removeClass('active').attr('sel', 0);

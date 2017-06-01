@@ -23,12 +23,18 @@
                 <div class="describe">{{=!isEmpty(it[p].contentSummary)?it[p].contentSummary:''}}</div>
               </div>{{ if(!isEmpty(it[p].imgPath)) { }}
               <ul class="pic-group">
-                {{ var imgPath=it[p].imgPath.split(','); }}
-                {{ for(var i in imgPath) { }}
-                {{if(i<=2) { }}
-                <li style="background-image:url({{=static_url+imgPath[i]}})" tapmode onclick="openImageBrower('{{=it[p].imgPath}}','{{=i}}')"></li>{{ } }}
-                {{ } }}
-                {{if(imgPath.length>=3) { }}<b>共{{=imgPath.length}}张</b>{{ } }}
+                {{ var imgPath=it[p].imgPath.split(','),imgPathArr=[];}}
+                    {{ for(var j in imgPath) { }}
+                      {{ if(!isEmpty(imgPath[j])) { }}
+                        {{ imgPathArr.push(imgPath[j]);}}
+                      {{ } }}
+                    {{ } }}
+                    {{ for(var i in imgPathArr) { }}                    
+                    {{var imgPathList=getImgPath('{{=imgPathArr[i]}}');}}
+                    {{if(i<=2) { }}
+                    <li style="background-image:url({{=imgPathList}})" tapmode onclick="openImageBrower('{{=it[p].imgPath}}','{{=i}}')"></li>{{ } }}
+                    {{ } }}                   
+                    {{if(imgPathArr.length>=3) { }}<b>共{{=imgPathArr.length}}张</b>{{ } }}
               </ul>{{ } }}
               <div class="footer">
                 <div class="count"><i class="icon-replys"></i><span>{{=isEmpty(it[p].replyCount)?'0':it[p].replyCount }}</span></div>
@@ -122,6 +128,7 @@
       function getData(page) {
           var param = {};
           param.self = 1;
+          param.type = 3;
           param.ordertype = 1;
           param.pageNo = page;
           param.pageSize = pageNum;
@@ -135,7 +142,7 @@
                   modal:false
               });
           }
-          ajaxRequest('api/studytools/questionlist/v2.1', 'get', param, function (ret, err) {//003.206 问题列表
+          ajaxRequest('api/studytools/bbslist/v1.0', 'get', param, function (ret, err) {//003.206 问题列表
               if(show_pro&&no_loaded){
                   api.hideProgress();
               }

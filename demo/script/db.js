@@ -75,7 +75,7 @@
                     showTasksProgressSql = 'SELECT * FROM ' + DB.taskNameTable+ ' where isLog="0"';
                   }
                     DB.selectSql(DB.taskNameDB, showTasksProgressSql, function(ret, err) {
-                       // alert('showTasksProgress:::' + JSON.stringify(ret)+JSON.stringify(err));
+                        //alert('showTasksProgress:::' + JSON.stringify(ret)+JSON.stringify(err));
                         if (ret.status && ret.data && ret.data.length) {
                             //alert('showTasksProgress:::' + JSON.stringify(ret)+JSON.stringify(err));
                             if (callback) { callback(ret) };

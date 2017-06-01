@@ -8,23 +8,23 @@ block body
         ul#course_content.das-top
         mixin course
             li(tapmode, onclick="CourseDetail('{{=data[p].courseId}}','{{=data[p].chapterId}}','{{=data[p].subjectID}}','{{=data[p].categoryId}}','{{=data[p].courseName}}','{{=data[p].chapterName}}','{{=data[p].subjectName}}','{{=data[p].categoryName}}')")
-                h1(style=" width: 100%;overflow:hidden;text-overflow :ellipsis;font-size: 0.28rem;")
+                h1(style=" width: 100%;overflow:hidden;text-overflow :ellipsis;font-size: 0.28rem;padding-right:0.2rem;")
                   | {{  if(!isEmpty(data[p].categoryName)) { }}
                   | {{=data[p].categoryName}}
                   | {{ } }}
                   | {{=data[p].subjectName}}
                 h2 {{=data[p].courseName}}
-                | {{ if(!isEmpty(data[p].chapterName) && !isEmpty(data[p].lastTaskdate)){ }}
+                | {{ if(!isEmpty(data[p].chapterName)){ }}
                 p 上次学到：{{=data[p].chapterName}}
                 | {{ }else{ }}
                 p 上次学到：您还没有学习记录
                 | {{ } }}
-                | {{ if(!isEmpty(data[p].taskprogress) && !isEmpty(data[p].taskTotal)) { }}
+                | {{ if(!isEmpty(data[p].showProgress) && !isEmpty(data[p].taskTotal)) { }}
                 .circle
                     .circle-progress
-                        .val {{=parseInt(Math.round((data[p].taskprogress/data[p].taskTotal).toFixed(4)*100))>90 ?  100 :parseInt(Math.round((data[p].taskprogress/data[p].taskTotal).toFixed(4)*100)) }}
+                        .val {{=parseInt((data[p].showProgress/data[p].taskTotal).toFixed(4)*100)>90 ?  100 :parseInt((data[p].showProgress/data[p].taskTotal).toFixed(4)*100) }}
                     .num
-                        span {{=data[p].taskprogress}}／
+                        span {{=data[p].showProgress}}／
                         b {{=data[p].taskTotal}}
                 | {{ }else{ }}
                 .circle

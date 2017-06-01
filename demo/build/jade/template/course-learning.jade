@@ -33,20 +33,20 @@ html
       </div>
       <div class="cpl-main">
       <div class="li">
-      <h3>{{=it[p].courseName}}</h3>{{if(!isEmpty(it[p].taskprogress)){ }}
+      <h3>{{=it[p].courseName}}</h3>{{if(!isEmpty(it[p].showProgress)){ }}
       <p>上次学习到：{{=it[p].chapterName}}</p>{{ }else{ }}
       <p>开始学习此课程</p>{{ } }}
       </div>
       <div class="li pro-li">
       <div class="clearfix cla">
-      <div class="left"><i class="icon-play3"></i><span>{{=it[p].taskprogress?it[p].taskprogress:0}} / {{=it[p].taskTotal}}</span></div>
-      <div class="right"><i class="icon-pencil2"></i><span>{{=it[p].taskprogress?it[p].taskprogress:0}} / {{=it[p].taskTotal}}</span></div>
+      <div class="left"><i class="icon-play3"></i><span>{{=it[p].showProgress?it[p].showProgress:0}} / {{=it[p].taskTotal}}</span></div>
+      <div class="right"><i class="icon-pencil2"></i><span>{{=it[p].showProgress?it[p].showProgress:0}} / {{=it[p].taskTotal}}</span></div>
       </div>
       <div class="clearfix clb">学习进度：
       </div>
       <div class="progress-box">
       <div class="progress">
-      <div min="{{=!isEmpty(it[p].taskprogress)?it[p].taskprogress:0}}" max="{{=!isEmpty(it[p].taskTotal)?it[p].taskTotal:0}}" class="progress-bar"></div>
+      <div min="{{=!isEmpty(it[p].showProgress)?it[p].showProgress:0}}" max="{{=!isEmpty(it[p].taskTotal)?it[p].taskTotal:0}}" class="progress-bar"></div>
       </div>
       </div>
       </div>

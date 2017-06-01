@@ -23,12 +23,18 @@
               <div tapmode url="{{=static_url+it.soundPath}}" onclick="playAudio(this)" bg time="{{=it.soundlen}}" class="voice-player"></div>{{ } }}
               {{ if(it.imgPath){ }}
               <div class="pic-group">
-                {{ var imgPath=it.imgPath.split(','); }}
-                {{ for(var i in imgPath) { }}
-                {{if(i<=2) { }}
-                <li style="background-image:url({{=static_url+imgPath[i]}})" tapmode onclick="openImageBrower('{{=it.imgPath}}','{{=i}}')"></li>
-                <!--img(src="{{=static_url+imgPath[i]}}")-->{{ } }}
-                {{ } }}<b>共{{=it.imgPath.split(',').length}}张</b>
+                {{ var imgPath=it.imgPath.split(','),imgPathArr=[];}}
+                    {{ for(var j in imgPath) { }}
+                      {{ if(!isEmpty(imgPath[j])) { }}
+                        {{ imgPathArr.push(imgPath[j]);}}
+                      {{ } }}
+                    {{ } }}
+                    {{ for(var i in imgPathArr) { }}                    
+                    {{var imgPathList=getImgPath('{{=imgPathArr[i]}}');}}
+                    {{if(i<=2) { }}
+                    <li style="background-image:url({{=imgPathList}})" tapmode onclick="openImageBrower('{{=it.imgPath}}','{{=i}}')"></li>{{ } }}
+                    {{ } }}                   
+                    {{if(imgPathArr.length>=3) { }}<b>共{{=imgPathArr.length}}张</b>{{ } }}
               </div>{{ } }}
               <div class="footer">
                 <div class="count"><i class="icon-replys"></i><span>{{=isEmpty(it.replyCount)?'0':it.replyCount}}</span></div>
@@ -116,7 +122,7 @@
           param.pageSize = pageSize;
           param.ordertype = 2;
           param.token = $api.getStorage('token');
-          ajaxRequest('api/studytools/discussdetail/v2.1', 'get', param, function (ret, err) {//003.301.1  讨论详情和回复列表
+          ajaxRequest('api/studytools/bbsdetail/v1.0', 'get', param, function (ret, err) {//003.301.1  讨论详情和回复列表
               if (err) {
                   api.toast({
                       msg : err.msg,

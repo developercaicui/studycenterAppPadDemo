@@ -17,7 +17,7 @@
       <div class="center">购买课程</div>
     </div>
     <ul id="content" class="course-pic-list buying">
-      <li class="ios-link"><a href="tel:010-57188863">
+      <li class="ios-link"><a style="top: 0.3rem;" href="tel:010-57188863">
           <p>咨询客服</p>
           <h3>010-57188863</h3></a></li>
     </ul>
@@ -27,18 +27,18 @@
               <h4>{{=it[p].updateDate.split(' ')[0]}}</h4>
             </div>
             <div class="cpl-main">
-              <div class="li">
+              <div class="li" style="height: 1rem;">
                 <h2>{{=it[p].title}}</h2>
               </div>
-              <div class="li buy-info">
+              <div class="li buy-info" style="margin-top: -0.2rem;">
                 <div class="left">￥{{=it[p].marketPrice}}</div>
                 <!--.right 已有213人观看-->
               </div>
               <div class="li lecturer">
-                <dl><img src="{{=static_url+it[p].teacherHeadImg}}" class="avatar">
+                <!-- <dl><img src="{{=static_url+it[p].teacherHeadImg}}" class="avatar">
                   <dt>{{=it[p].teacherName}}</dt>
                   <dd>{{=it[p].ability}}</dd>
-                </dl>
+                </dl> -->
                 <div tapmode onclick="buys('{{=it[p].id}}','{{=it[p].marketPrice}}')" class="btn btn-o">购买</div>
               </div>
             </div>
@@ -52,6 +52,7 @@
     <script type="text/javascript">
       function init(){
           var data=JSON.parse(api.pageParam.data);
+
           var tpl = $('#tpl').html();
           var content = doT.template(tpl);
           $('#content').prepend(content(data));

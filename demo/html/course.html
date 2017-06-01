@@ -31,7 +31,7 @@
           <dt>
             <div class="circle-progress">
               <div class="text">我的进度</div>
-              <div class="val"></div>
+              <div id="progressVal" class="val"></div>
             </div>
           </dt>
           <dd>
@@ -41,11 +41,15 @@
         </dl>
       </div>
       <div tapmode onclick="play()" class="s-title"><span>开始学习</span><i class="icon-play2-o"></i></div>
+      <div class="s-course-data">
+        <p>课程到期：</p>&nbsp;&nbsp;
+        <p>考试时间：</p>
+      </div>
       <ul id="menuList" class="list-group">
-        <li onclick="openCourseHead(this,0)" class="active"><i class="icon-file-o"></i><span>课程表</span></li>
+        <li onclick="openCourseHead(this,0)" class="active"><i class="icon-file-o"></i><span>学习</span></li>
         <li onclick="openCourseHead(this,1)"><i class="icon-edit-o"></i><span>笔记</span></li>
-        <li onclick="openCourseHead(this,2)"><i class="icon-ask-o"></i><span>问答</span></li>
-        <li onclick="openCourseHead(this,3)"><i class="icon-comments-o"></i><span>讨论</span></li>
+        <li onclick="openCourseHead(this,2)"><i class="icon-ask-o"></i><span>交流</span></li>
+        <li onclick="openCourseHead(this,3)" style="display: none;"><i class="icon-comments-o"></i><span>讨论</span></li>
         <li><i class="icon-male-o"></i><span>同学</span><em><b>62</b>/456</em></li>
       </ul>
       <div class="swiper-container">
@@ -80,14 +84,36 @@
           $('.center').html(api.pageParam.courseName);
           var header = $api.byId('header');
           $api.fixIos7Bar(header);
+          headLh = $api.offset(header).h;
           $('#slider').css('top', headLh);
+          headSh = parseInt(window.localStorage.caicui_headSh);
+    
           myFrame('course-chapter', 'course-head', false);
+
+          var examTime,courseDue;
+          if(api.pageParam.examTime){
+            examTime = api.pageParam.examTime;
+            
+          }else{
+            examTime = "暂无考试"
+          }
+          courseDue = api.pageParam.courseDue;
+          $(".s-course-data").find("p").eq(0).text(courseDue)
+          $(".s-course-data").find("p").eq(1).text(examTime)
           get_tasks();
           api.addEventListener({
               name: 'keyback'
           }, function (ret) {
               get_back();
           });
+          api.addEventListener({
+              name: 'clearlist-group'
+          }, function () {
+              $('ul.list-group li').removeClass();
+          });
+          window.localStorage.caicui_headLh = headLh = $api.offset(header).h;
+
+          window.localStorage.caicui_leftLw = leftLw = $('#slider').width();
       };
       //返回
       function get_back(){
@@ -206,6 +232,9 @@
           api.closeFrame({name: 'course-note-all'});
           api.closeFrame({name: 'course-answer-all'});
           api.closeFrame({name: 'footer-answer'}); //问答补充编辑条
+          api.closeFrame({name: 'video-cache-f'});
+          api.closeFrame({name: 'tasks-cache'});
+          api.closeFrame({name: 'tasks-cache-f'});
       }
       function openCourseHead(obj,a){
           closeSearch();
@@ -216,6 +245,9 @@
           } else {
               api.sendEvent({
                   name: 'closeFrameAll'
+              });
+              api.sendEvent({
+                  name: 'flush_catalog'
               });
               setFA('course-chapter', true);
               setFA('course-chapter-f', true);
@@ -430,6 +462,9 @@
       //点击页面上的在学课程，跳转学习课程页面
       //点击页面上的在学课程，跳转学习课程页面
       function play() {
+          var chapterId = api.pageParam.chapterId;
+          $api.setStorage("setchapterId",chapterId);
+          $api.setStorage("closeSetTimeOut",true);
           get_course_detail(function(ret){
               if(ret){
                   course_detail=ret;

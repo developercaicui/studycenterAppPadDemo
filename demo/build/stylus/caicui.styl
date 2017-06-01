@@ -52,11 +52,12 @@ html
         width 100%
         height 100%
         font-size 0.24rem
-        background #f3f3f3
+        //background #f3f3f3
+        background #fff
         margin 0
         overflow-x hidden
         &.null
-            background #f3f3f3 url("../image/404.svg") no-repeat center
+            background #fff url("../image/404.svg") no-repeat center
             background-size 128px 128px !important
 *
     box-sizing border-box
@@ -393,7 +394,7 @@ cir_w = 2rem
     //top .6rem
     //right 1.2rem
     &:after
-        content "kb/s"
+        content ""
 .down-progress
     width .8rem
     height .8rem
@@ -409,7 +410,7 @@ cir_w = 2rem
             font-size .5rem !important
             &:before
                 content '\e913'
-    &[status='wait'],&[type='2'],.wait
+    &[status='wait'],&[type='2'],&[type='5'],.wait
         i:before
             content '\e909'
     i
@@ -469,7 +470,7 @@ cir_w = 2rem
             background-size 100% auto
 
     .msg-mark
-        margin .15rem 0 0 -.5rem
+        margin 0.3rem 0.05rem 0 -0.5rem
 
 
 //小头部
@@ -779,7 +780,7 @@ ul.footer-nav
     .s-top
         height 2.9rem
         font-size .24rem
-        background url("../image/course-slider.jpg") no-repeat
+        background url("../image/course-head.jpg") no-repeat
         color #fff
         dl
             width 100%
@@ -864,17 +865,20 @@ ul.footer-nav
     z-index 9999
     top 0
     bottom 0
-    color $color_gray2
+    //color $color_gray2
+    color #fff
 .slider-menu
     width 100%
     height 100%
-    background  url("../image/slider-bg.jpg") no-repeat center !important
+    //background  url("../image/slider-bg.jpg") no-repeat center !important
+    background #3d4e64 !important
     text-align center
     .imgbox
         .avatar
             width .8rem
             height .8rem
             margin .5rem auto
+            opacity 0;
     ul
         width 100%
         height 85%
@@ -914,12 +918,11 @@ ul.footer-nav
         background-image url("../image/dot-status2.svg")
     &[type="3"]
         background-image url("../image/dot-status3.svg")
-    & ~ span
-        padding-left .5rem
+    
 
 //倍数
-.multiples::before
-    content '×'
+//.multiples::before
+//    content '×'
 
 //列表右侧控制区
 .console
@@ -968,20 +971,30 @@ ul.footer-nav
 
 
 .course-topnav
-    height 1.25rem
-    padding 0.4rem 0 .2rem 0.4rem
+    height 1rem
+    //padding 0.4rem 0 .2rem 0.4rem
+    display table
+    width 100%
+    line-height 1rem
     .active
-        color #fff
-        background #00a185
+        color #3d4e64
+        background #fff
+        border-bottom none
     li
         color #b3b3b3
         width 1.9rem
         display inline-block
-        border-radius 0.1rem
         text-align center
         height 0.6rem
-        line-height 0.6rem
-        font-size 0.28rem
+        font-size 0.3rem
+        font-weight bold
+        display table-cell
+        line-height 1rem
+        border 1px solid #d2d2d2
+        border-top none
+        border-left none
+        background #f5f5f5
+    
 .left
     float left
 .right
@@ -994,22 +1007,26 @@ ul.footer-nav
     .course-pic-list
         margin 0
         padding-top .2rem
-        background #f5f5f5
+        background #fff
         display table
         width 100%
-        box-shadow 0 5rem 0 0 #f5f5f5
+        //box-shadow 0 5rem 0 0 #f5f5f5
 
 
 .course-pic-list
-    margin -.1rem 1%
+    margin 0.2rem 0.9rem 0 1.1rem
+    height 100%
     li
-        margin .2rem 1%
-        height 5rem
-        width 23%
+        margin .2rem 0
+        height 2rem
+        width 6.8rem
         background #fff
         border-bottom 1px solid #ddd
-        float left
+        //float left
         position relative
+        display inline-block
+        border 1px solid #d2d2d2
+        margin-right 0.4rem
         &.ios-link
             background #e7e5e5 url("../image/ios-link1.png") no-repeat center 30%
             background-size 2rem auto
@@ -1017,31 +1034,38 @@ ul.footer-nav
             font-size .3rem
             overflow hidden
             a
-                display block
+                //display block
                 color #5a5a5a
-                padding 3.3rem 0 1.5rem 0
+                //padding 1.2rem 0 1.5rem 0
+                position absolute
+                top 0.58rem
+                left 2rem
                 h3
                     margin-top .2rem
 
-        &:not(.ios-link):before
+        &.learnLi:before
             content ""
             position absolute
             z-index 3
             background #eee
-            width 100%
+            width 44%
             height .03rem
-            bottom .8rem
-
+            bottom 0.75rem
+            right 0.7rem
 
 
         .cpl-head
-            height 2.55rem
+            //height 2.55rem
             background #c1c3c6 url(../image/course-slider.jpg) center no-repeat
             background-size 100% 100%
-            padding 1.5rem .3rem 0 .3rem
+            //padding 1.5rem .3rem 0 .3rem
+            height 100%
             color #fff
+            width 2.8rem
+            float left
             h4,h5
                 font-size .2rem
+                padding 1.5rem 0 0 0.3rem
             h5
                 display none
                 margin .15rem 0
@@ -1049,9 +1073,11 @@ ul.footer-nav
                 background rgba(255,255,255,.4)
         .cpl-main
             color #606f77
+            float left
+            width 3.9rem
             .li
-                padding .1rem .3rem
-                height .8rem
+                padding .3rem .3rem
+                height 0.95rem
                 overflow hidden
                 //background #095
                 //&:nth-child(2n)
@@ -1061,9 +1087,9 @@ ul.footer-nav
                 color #212121
                 font-size .24rem
             h3,p,dt,dd
-                white-space nowrap
-                overflow hidden
-                text-overflow ellipsis
+                //white-space nowrap
+                //overflow hidden
+                //text-overflow ellipsis
             p
                 margin .05rem 0
                 font-size .2rem
@@ -1097,7 +1123,7 @@ ul.footer-nav
 
     &.buying
         h2
-            font-size .28rem
+            font-size .26rem
             line-height .36rem
         .buy-info
             .right
@@ -1129,10 +1155,12 @@ ul.footer-nav
             display none
     .progress-box
         display block
+        margin-top 0.2rem
         .progress
-            height .05rem
+            height .07rem
+            width 62%
             .progress-bar
-                height .05rem
+                height .07rem
 
 
 .progress-box
@@ -2566,7 +2594,7 @@ body
     .cache-list
         .icon-check
             display inline-block
-
+            
         .progress-box
             .progress-val
                 right 1.2rem
@@ -2595,14 +2623,14 @@ body
         .icon-arrow-down
             -webkit-transform: rotate(-90deg)
         .list
-            font-size 0
-            height 0
-            opacity 0
+            //font-size 0
+            //height 0
+            //opacity 0
             dl
-                height 0
-                border-bottom 0
-                dt,dd
-                    display none
+                //height 0
+                //border-bottom 0
+         ul,li
+              display none
     .icon-arrow-down
         position absolute
         margin-top -.1rem
@@ -2645,7 +2673,7 @@ body
 
     dl
         display table
-        background #fff
+        //background #fff
         width 100%
         position relative
         border-bottom 1px solid rgba(160,160,160,.2)
@@ -2658,7 +2686,7 @@ body
             &:active
                 background rgba(0,0,0,.03)
         dt
-            width 75%
+            width 82%
             position relative
             p
                 font-size inherit
@@ -2672,7 +2700,7 @@ body
         dd
             width 25%
             text-align right
-            padding-right .3rem
+            padding-right .4rem
 
         &.haschild
             padding-left .4rem
@@ -2688,7 +2716,7 @@ body
         display inline-block
         li
             display inline-block
-            padding-right .2rem
+            //padding-right .2rem
             i
                 color $color_green
                 margin-right .1rem
@@ -2718,3 +2746,179 @@ body
 
 
 @import "footer-editor"
+
+//头像信息
+.header-index .user-info
+  position relative
+  padding 0.44rem 0 0 1rem
+  height 1.68rem
+
+.header-index .user-info img
+  //height 1.28rem
+  //width 1.28rem
+  height 1.54rem
+  width 1.54rem
+  border 3px solid #fff
+  border-radius 50%
+
+.header-index .user-info .user-name
+  position absolute
+  left 3rem
+  top 0.9rem
+
+.header-index .user-info .user-name h5
+  font-size 0.32rem
+  font-weight normal
+  line-height 0
+  color #5a5a5a
+
+.header-index .user-info .user-name p
+  color #000
+  font-size 0.26rem
+  //margin-top 0.2rem
+  white-space nowrap
+
+.header-index .user-info .user-name p span
+  color #00a185
+  //padding 0 5%
+  font-size 0.3rem
+
+.header-index .user-info .message-bells
+  position absolute
+  top 0.2rem
+  right 0.3rem
+  height 1.2rem
+  width 1rem
+  line-height 1
+
+.header-index .user-info .message-bells i
+  font-size 0.36rem
+  color #666
+  position absolute
+  right 0.22rem
+  top 0.16rem
+.mylogin-msg
+  position  absolute;
+  right  0.9rem
+  top  1.1rem
+  padding  0 0.3rem
+
+.mylogin-msg p
+  display  inline-block
+  font-size  0.26rem
+  color #b0b0b0
+
+.mylogin-msg p :nth-child(1)
+  padding-right 0.1rem
+
+.mylogin-msg p span
+  font-size  0.32rem
+  color #000
+.s-course-data
+  //height 1.2rem
+  font-size 0.24rem
+  color #666
+  padding 0.18rem 0 0.18rem 0
+  text-align center
+  border-bottom 1px solid #ddd
+  p
+    padding-top 0.1rem
+    display inline-block
+
+
+//小底部
+.avaiace
+    font-size .32rem
+    height 1.6rem
+    line-height 1.6rem
+    border-top  1px solid #ddd
+    z-index 100
+    background #f6f6f6
+    position fixed
+    left 0
+    right 0
+    bottom 0
+
+.manage
+    float left
+    font-size 0.3rem
+    color #666666
+    padding-left 0.6rem
+
+.space
+    float right
+    font-size 0.26rem
+    color #999999
+    margin-right 0.6rem
+
+.space span
+    float right
+    margin-left 0.18rem
+    width 0.12rem
+    height 0.28rem
+    line-height 2.07rem
+    background url(../image/center-arrow.png) center no-repeat
+    background-size 100%
+    margin-top 0.65rem
+//横向进度条
+.progress-box2
+  white-space nowrap
+  width 100%
+  height 0.23rem
+
+.progress-box2 > *
+  display inline-block
+  vertical-align middle
+  line-height 0.3rem
+
+.progress-box2 .progress2
+  width 80%
+  height 0.14rem
+  background #ccc
+  border-radius 0.1rem
+  overflow hidden
+
+.progress-box2 .progress2 .progress-bar2
+  width 0
+  height 0.14rem
+  background #fff
+  border-radius 0.1rem
+  transition all 0.5s
+
+.progress-box2 .progress-val2
+  font-size 0.26rem
+  color #fff
+  margin-left 0
+  font-weight bold
+
+.checking .cache-list .icon-check
+  display inline-block
+
+.checking .cache-list .down-progress
+  display none
+
+//在学课程导航
+.learning-navL
+    width 100%
+    //height 1.2rem
+    line-height 1rem
+    p
+        display inline-block
+        //height 0.6rem
+        border 2px solid #3d4e64
+        line-height 0.6rem
+        padding 0 0.6rem
+        font-weight bold
+        font-size 0.3rem
+        color #3d4e64
+        margin-right 0.6rem
+        &.active
+            background #3d4e64
+            color #fff
+.stydys
+    display none
+    h2
+        line-height 0.5rem 
+        font-size 0.26rem   
+    
+    

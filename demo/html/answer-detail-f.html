@@ -27,12 +27,18 @@
               <div tapmode url="{{=static_url+it.soundPath}}" onclick="playAudio(this)" bg time="{{=it.soundlen}}" class="voice-player"></div>{{ } }}
               {{ if(!isEmpty(it.imgPath)) { }}
               <ul class="pic-group">
-                {{ var imgPath=it.imgPath.split(','); }}
-                {{ for(var i in imgPath) { }}
-                {{if(i<=2) { }}
-                <li style="background-image:url({{=static_url + imgPath[i]}})" tapmode onclick="openImageBrower('{{=it.imgPath}}','{{=i}}')"></li>
-                <!--img(src="{{=static_url + imgPath[i]}}")-->{{ } }}
-                {{ } }}<b>共 {{=it.imgPath.split(',').length}} 张</b>
+                {{ var imgPath=it.imgPath.split(','),imgPathArr=[];}}
+                    {{ for(var j in imgPath) { }}
+                      {{ if(!isEmpty(imgPath[j])) { }}
+                        {{ imgPathArr.push(imgPath[j]);}}
+                      {{ } }}
+                    {{ } }}
+                    {{ for(var i in imgPathArr) { }}                    
+                    {{var imgPathList=getImgPath('{{=imgPathArr[i]}}');}}
+                    {{if(i<=2) { }}
+                    <li style="background-image:url({{=imgPathList}})" tapmode onclick="openImageBrower('{{=it.imgPath}}','{{=i}}')"></li>{{ } }}
+                    {{ } }}                   
+                    {{if(imgPathArr.length>=3) { }}<b>共{{=imgPathArr.length}}张</b>{{ } }}
               </ul>{{ } }}
               {{if(!isEmpty(it.supply)){   }}
               {{for(var p in it.supply){ }}
@@ -52,7 +58,7 @@
               <div class="footer">
                 <div class="count"><i class="icon-replys"></i><span>{{=isEmpty(it.replyCount)?'0':it.replyCount }}</span></div>
                 <div class="time"><span>{{ if(!isEmpty(it.updateTime))  { }}{{=formatDate(it.updateTime,'Y')+'-'+formatDate(it.updateTime,'M')+'-'+formatDate(it.updateTime,'D')}} {{ } }}</span><span>{{ if(!isEmpty(it.updateTime))  { }}{{=formatDate(it.updateTime,'h')+':'+formatDate(it.updateTime,'m')}} {{ } }}</span></div>
-                <div class="course-name">{{if(it.taskprogress && parseInt(it.taskprogress) && !isEmpty(it.taskType)){ }}<span class="tag-video-time"><i class="icon-play-o"></i><span tapmode onclick="jump_task('{{=it.taskprogress}}','{{=it.courseId}}','{{=it.taskId}}')">{{=formatType(it.taskType,it.taskprogress)}}</span></span>{{ } }}
+                <div class="course-name">{{if(it.askprogress != '-1' && it.courseId && it.courseId != ' ' && it.chapterId && it.chapterId != ' ' && it.taskId && it.taskId != ' '){ }}<span class="tag-video-time"><i class="icon-play-o"></i><span tapmode onclick="jump_task('{{=it.taskprogress}}','{{=it.courseId}}','{{=it.taskId}}')">{{=formatType(it.taskType,it.taskprogress)}}</span></span>{{ } }}
                   {{ if(it.coursename && it.coursename != null){ }}<span class="course-tit"> {{=it.coursename}}</span>{{ } }}
                 </div>
               </div>
@@ -180,7 +186,8 @@
                   modal:false
               });
           }
-          ajaxRequest('api/studytools/questiondetail/v2.1', 'get', param, function (ret, err) {//003.207 问题详情
+          // ajaxRequest('api/studytools/questiondetail/v2.1', 'get', param, function (ret, err) {//003.207 问题详情
+          ajaxRequest('api/studytools/bbsdetail/v1.0', 'get', param, function (ret, err) {//003.301.1  讨论详情和回复列表
               if (show_pro && no_loaded) {
                   api.hideProgress();
               }

@@ -40,16 +40,28 @@
     <div class="onlogin none">
       <div id="header" head="0" class="header header-white header-home">
         <div class="header-index">
-          <div class="center">
+          <!-- <div class="center">
             <div class="logo"></div>
+          </div> -->
+          <div class="user-info"><img src="../image/touxiang.png" alt="" tapmode onclick="modify()" class="avatar headimg">
+            <div class="user-name">
+              <h5 class="nickName"></h5>
+              <p><span style="color:#787878;font-size: 0.26rem;" class="nickMessage"></span></p>
+            </div>
           </div>
-          <div tapmode onclick="myFrame('pop-msg','full',false,this,'')" class="right"><i class="icon-message"></i><span class="msg-mark center_num1"></span></div>
+          <div class="mylogin-msg">
+              <p class="ranking">上次登录时间：<span>一天前</span></p>
+              <p class="examDateCurr">最近考试：<span>CMA_P1 2017/11/04</span></p>
+          </div>
+          <div tapmode onclick="myFrame('pop-msg','full',false,this,'')" class="right" style="right: 0.9rem;top: 0.2rem;">
+            <i class="icon-message"></i><span class="msg-mark center_num1"></span></div>
         </div>
-        <div class="header-course">
+        <div class="header-course" style="display: none;">
           <div class="center">
             <div class="logo"></div>
           </div>
-          <div tapmode onclick="myFrame('pop-msg','full',false,this,'')" class="right"><i class="icon-message"></i><span class="msg-mark center_num2"></span></div>
+          <div tapmode onclick="myFrame('pop-msg','full',false,this,'')" class="right">
+              <i class="icon-message"></i><span class="msg-mark center_num2"></span></div>
         </div>
         <div class="header-note">
           <div class="center">章节列表</div>
@@ -209,7 +221,7 @@
       </div>
       <div id="slider" class="slider">
         <div class="slider-menu">
-          <div tapmode onclick="modify()" class="imgbox"><img class="avatar"></div>
+          <div tapmode onclick="" class="imgbox"><img class="avatar"></div>
           <ul id="leftMenu">
             <li onclick="set_index(0)" class="active"><span><i class="icon icon-dashboard"></i>
                 <p>学习中心</p></span></li>
@@ -217,13 +229,13 @@
                 <p>在线课程</p></span></li>
             <li onclick="set_index(2)"><span><i class="icon icon-edit3"></i>
                 <p>我的笔记</p></span></li>
-            <li onclick="set_index(3)"><span><i class="icon icon-question"></i>
+            <li onclick="set_index(3)" style="display: none;"><span><i class="icon icon-question"></i>
                 <p>我的问答</p></span></li>
             <li onclick="set_index(4)"><span><i class="icon icon-comments2"></i>
-                <p>我的讨论</p></span></li>
+                <p>我的交流</p></span></li>
             <li onclick="set_index(5)"><span><i class="icon icon-download2"></i>
                 <p>缓存课程</p></span></li>
-            <li tapmode onclick="myFrame('set-info','full',false,this,'')"><span><i class="icon-cog"></i>
+            <li tapmode onclick="myFrame('set-info','full',false,this,'')" style="position: absolute;bottom: 0.5rem;"><span><i class="icon-cog"></i>
                 <p>设置</p></span></li>
           </ul>
         </div>

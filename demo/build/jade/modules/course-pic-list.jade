@@ -1,16 +1,16 @@
 mixin lst
-    li(tapmode,data-coursename="{{=it[p].courseName}}",data-chapterName="{{=it[p].chapterName}}",onclick="openCourse(this,'{{=it[p].courseId}}','{{=it[p].chapterId}}','{{=it[p].subjectID}}','{{=it[p].categoryId}}','{{=it[p].subjectName}}','{{=it[p].categoryName}}')")
+    li(tapmode,data-coursename="{{=it[p].courseName}}",data-chapterName="{{=it[p].chapterName}}")
         .cpl-head(style="background-image:url({{=static_url+it[p].courseBkImage}})")
             //h4 {{=formatDate(it[p].expirationTime,'Y')+'-'+formatDate(it[p].expirationTime,'M')+'-'+formatDate(it[p].expirationTime,'D')}}  {{=formatDate(it[p].expirationTime,'h')+':'+formatDate(it[p].expirationTime,'m')}}
             h4 {{=formatDate(it[p].expirationTime,'Y')+'-'+formatDate(it[p].expirationTime,'M')+'-'+formatDate(it[p].expirationTime,'D')}} 过期
             //-h5 更新到第8节课
         .cpl-main
             .li
-                h3 {{=it[p].courseName}}
+                h3(style="margin-top: 0.25rem;") {{=it[p].courseName}}
                 | {{if(!isEmpty(it[p].taskprogress)){ }}
-                p 上次学习到：{{=it[p].chapterName}}
+                p.none 上次学习到：{{=it[p].chapterName}}
                 | {{ }else{ }}
-                p 开始学习此课程
+                p.none 开始学习此课程
                 | {{ } }}
             .li.pro-li
                 .clearfix.cla
@@ -37,7 +37,7 @@ mixin lst
                     span 马上激活
                     .none.data {{=JSON.stringify(it[p])}}
                     i.icon-lock-open
-                | {{ if(!isEmpty(it[p].is_show)) { }}
+                | {{ if(isEmpty(it[p].is_show)) { }}
                 | {{ if(it[p].isU==true){ }}
                 .btn.btn-o(tapmode,onclick="renew()")
                     span 申请重听

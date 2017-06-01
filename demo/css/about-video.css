@@ -82,10 +82,9 @@
 .about-video-content ul li {
   position: relative;
   width: 100%;
-  border-top: 1px solid #606160;
 }
 .about-video-content ul li.video-catego {
-  height: 1.2rem;
+  height: 1.6rem;
 }
 .about-video-content ul li.out-li {
   border-bottom: 1px solid #606160;
@@ -185,7 +184,7 @@
 }
 .chapter-task li > span {
   position: absolute;
-  left: 0.3rem;
+  left: 5%;
   top: 50%;
   -webkit-transform: translateY(-50%);
   height: 0.72rem;
@@ -194,9 +193,9 @@
 }
 .chapter-task li > div {
   display: inline-block;
-  width: 83%;
+  width: 80%;
   position: absolute;
-  left: 15%;
+  left: 10%;
   top: 50%;
   -webkit-transform: translateY(-50%);
   height: 0.7rem;
@@ -225,7 +224,7 @@
   right: 0;
 }
 .chapter-task li .v-progress {
-  height: 0.08rem;
+  height: 0.1rem;
   width: 100%;
   border-radius: 0.08rem;
   background-color: #999;
@@ -233,7 +232,7 @@
   bottom: 0;
 }
 .chapter-task li .v-progress span {
-  height: 0.08rem;
+  height: 0.1rem;
   background-color: #00a085;
   position: absolute;
   display: block;

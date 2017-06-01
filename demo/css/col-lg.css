@@ -1232,18 +1232,23 @@
   border-bottom: 1px solid #e8e8e8;
 }
 .dashboard ul.das-top {
-  margin: 0.4rem 1%;
+  padding-right: 4rem;
   line-height: 0.4rem;
   font-size: 0.15rem;
   color: #fff;
-  height: 2rem;
+  height: 7rem;
   overflow: hidden;
 }
+.dashboard ul.das-top h4 {
+  color: #666;
+  font-size: 0.3rem;
+  padding: 0.57rem 0 0.1rem 0;
+}
 .dashboard ul.das-top li {
-  width: 22.75%;
-  height: 2rem;
-  margin: 0 1%;
-  font-size: 0.18rem;
+  width: 6.5rem;
+  height: 2.3rem;
+  margin: 1.5% 2% 1.5% 0;
+  font-size: 0.21rem;
   display: inline-block;
   vertical-align: top;
   position: relative;
@@ -1261,10 +1266,7 @@
 .dashboard ul.das-top li h1,
 .dashboard ul.das-top li h2,
 .dashboard ul.das-top li p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 0.2rem;
+  padding-left: 0.3rem;
 }
 .dashboard ul.das-top li h1 {
   line-height: 0.6rem;
@@ -1272,30 +1274,32 @@
   font-size: 0.28rem;
 }
 .dashboard ul.das-top li h2 {
-  font-size: 0.22rem;
+  font-size: 0.3rem;
   margin-top: 0.3rem;
+  height: 0.9rem;
 }
 .dashboard ul.das-top li h2,
 .dashboard ul.das-top li p {
-  margin-right: 1.2rem;
+  margin-right: 1.4rem;
 }
 .dashboard ul.das-top li p,
-.dashboard ul.das-top li b {
-  opacity: 0.7;
+.dashboard ul.das-top li b,
+.dashboard ul.das-top li span {
+  opacity: 0.9;
 }
 .dashboard ul.das-top li .circle {
   position: absolute;
-  bottom: 0.1rem;
-  right: 0.2rem;
+  bottom: 0.22rem;
+  right: 0.5rem;
   text-align: center;
 }
 .dashboard ul.das-top li .circle .circle-progress {
-  width: 0.7rem;
-  height: 0.7rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 .dashboard ul.das-top li .circle .circle-progress .val {
   font-size: 0.2rem;
-  line-height: 0.7rem;
+  line-height: 1.2rem;
   bottom: 0;
 }
 .dashboard ul.das-top li .circle .circle-progress circle {
@@ -1600,4 +1604,26 @@
   width: 100%;
   height: 6rem;
   padding: 0;
+}
+.activity {
+  margin: 0 0 0 1.2rem;
+  height: 3.86rem;
+}
+.activity h4 {
+  color: #666;
+  font-size: 0.3rem;
+  padding: 0.57rem 0 0.1rem 0;
+}
+.activity li {
+  height: 3rem;
+  width: 31%;
+  display: inline-block;
+  padding: 0.2rem 1%;
+}
+.activity li:nth-child(1) {
+  padding-left: 0;
+}
+.activity li p {
+  font-size: 0.26rem;
+  padding-top: 0.2rem;
 }
