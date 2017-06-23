@@ -31,7 +31,7 @@ function bind_push() {
     var username = get_loc_val('mine', 'nickName');
     push.bind({
         userName: username,
-        userId: api.deviceId
+        userId: "13051732275"
     }, function (ret, err) {
     });
 }
@@ -463,13 +463,14 @@ function init(callback) {
     }
     var token = isEmpty($api.getStorage('token')) ? '' : $api.getStorage('token');
     if (token != '') {
-        ajaxRequest('api/v2/member/get', 'get', {
+        ajaxRequest('api/zbids/member/getmemberinfo', 'get', {
             token: token
         }, function (ret, err) {
             if (err) {
                 callback(false);
             }
             if (ret && ret.state == 'success') {
+                ret.data.memberId = ret.data.id;
                 $api.setStorage('memberMessage',ret);
                 callback(ret.data);
             } else {
@@ -586,7 +587,7 @@ function to_ucenter() {
     var avatar = static_url + get_loc_val('mine', 'avatar');
     $('.nickName').html(nickName);
     //联系方式
-      ajaxRequest('api/v2/member/get',"get", {"token":$api.getStorage('token')}, function (ret, error) {
+      ajaxRequest('api/zbids/member/getmemberinfo',"get", {"token":$api.getStorage('token')}, function (ret, error) {
         if(error){
             api.toast({
                 msg:error.msg,
@@ -608,6 +609,10 @@ function to_ucenter() {
 }
 function get_ranking() {
     var memberId = getstor('memberId');
+    if(memberId == false){
+        $(".ranking").html("上次登录时间：<span>1分钟前</span>");
+        return false;
+    }
     //上次登录时间
     // $(".ranking").html("登陆成功");
     ajaxRequest('api/zbids/member/getLoginLog',"get", {"memberid":memberId,"pageSize":1,"pageNo":1}, function (ret, error) {
@@ -801,19 +806,21 @@ apiready = function () {
     
     memberId = getstor('memberId');
     var data = $api.getStorage(memberId + 'video-buffer');
-    if (!isEmpty(data) || data.length != 0) { //有下载列表
+
+    if (typeof(data) != "undefined" || !isEmpty(data)) { //有下载列表
         mydata = [];
         set_data(0);
         var len = Object.keys(data).length; //  2
         function set_data(num) {
             //全部缓存列表
-            read_file(memberId + data[num] + '.db', function(ret, err) {
+            read_file(memberId + data[num] + '.db', function(ret, err) {                
                 if (ret) {
                     var ret_data = JSON.parse(ret.data);
                     var res = {
                         data: ret_data
                     };
                     mydata.push(res);
+                    // alert(JSON.stringify(mydata))
                     if (num < len - 1) {
                         num++;
                         set_data(num);
@@ -823,21 +830,23 @@ apiready = function () {
                 }
             });
         }
+        $api.rmStorage(memberId + 'video-buffer');
     }
+
+
+
 function init_data(){
-    if (cache_model == null) {
-        cache_model = api.require('lbbVideo');
-    }
+    cache_model = api.require('lbbVideo');
 
     $.each(mydata,function(key,value){
         var tasks_info = gets_tasks(value.data[0]);
-
+ 
         // 保存课程信息库
         if(api.systemType == "ios"){
             cache_model.inserCourseDetailJson({
                 "userId" : memberId,
                 "courseId" : value.data[0].courseId,
-                "courseJson" : value.data
+                "courseJson" : JSON.stringify(value.data)
             },function(ret,err){
              
             })
@@ -850,22 +859,36 @@ function init_data(){
                 
             })
         }
+        
         for(var i in tasks_info){
-            if(tasks_info[i].progress != 0){
-                var downObj = {
-                    userId : memberId,
-                    courseId : tasks_info[i].courseId,
-                    apiKey : tasks_info[i].taskInfo.apiKey,
-                    videoId : tasks_info[i].taskInfo.videoCcid,
-                    path : tasks_info[i].path,
-                    UserId : tasks_info[i].taskInfo.videoSiteId,
-                    state : tasks_info[i].state,
-                    progress : tasks_info[i].progress
+            if(tasks_info[i].progress != 0 && tasks_info[i].taskInfo.taskType == "video"){
+                if(tasks_info[i].state != 4){
+
+                    var ccids = [];
+                    ccids.push(tasks_info[i].taskInfo.videoCcid);
+                    var jsfun = "rmVideo('" + JSON.stringify(ccids) + "');";
+                     api.execScript({
+                        name: 'root',
+                        script: jsfun
+                     });
+
+                }else{
+                    var downObj = {
+                        userId : memberId,
+                        courseId : tasks_info[i].courseId,
+                        apiKey : tasks_info[i].taskInfo.apiKey,
+                        videoId : tasks_info[i].taskInfo.videoCcid,
+                        path : tasks_info[i].path,
+                        UserId : tasks_info[i].taskInfo.videoSiteId,
+                        state : tasks_info[i].state,
+                        progress : tasks_info[i].progress
+                    }
+                  
+                    cache_model.insertLastDownloadCourseState(downObj,function(ret){
+                        
+                    })
                 }
-               
-                cache_model.insertLastDownloadCourseState(downObj,function(ret,err){
-                    // console.log(JSON.stringify(ret))
-                })
+                
                 
             }
         }
@@ -966,7 +989,8 @@ function gets_tasks(courseDetail) {
                                         chapterId: cId,
                                         chapterName: cName,
                                         progress : progress,
-                                        state : state,taskInfo: data_arr[i].tasks[k],
+                                        state : state,
+                                        taskInfo: data_arr[i].tasks[k],
                                         path : courseId+"//"+cId+"//"+data_arr[i].tasks[k].videoCcid
                                 };
                                 arr[taskid] = obj_data;
@@ -984,7 +1008,7 @@ function gets_tasks(courseDetail) {
     });
 
     is_resume = false;
-
+    
     api.addEventListener({
         name: 'pause'
     }, function (ret, err) {
@@ -1214,6 +1238,7 @@ function gets_tasks(courseDetail) {
                                     duration: 500
                                 }
                             });
+
                             if (ret && ret.state == 'success') {
                                 $api.setStorage('token', ret.data.token);
                                 $api.setStorage('mine', ret.data);
