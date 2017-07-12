@@ -315,7 +315,7 @@
       apiready = function () {
       
           //联系方式
-          ajaxRequest('api/v2/member/get',"get", {"token":$api.getStorage('token')}, function (ret, error) {
+          ajaxRequest('api/zbids/member/getmemberinfo',"get", {"token":$api.getStorage('token')}, function (ret, error) {
             if(error){
                 api.toast({
                     msg:error.msg,

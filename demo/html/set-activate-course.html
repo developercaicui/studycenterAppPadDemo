@@ -25,7 +25,7 @@
               <dd>哈佛认证资深讲师</dd>
             </dl>
             <ul class="cotime">
-              <li>购买时间： 2014年10月22日</li>
+              <li>证书名称：CMA 中文 Part-1</li>
               <li>有效时间： 180天</li>
             </ul>
             <div tapmode onclick="closeMe()" class="btn btn-o btn-back"><i class="icon-back"></i><span>暂不激活</span></div>
@@ -94,16 +94,18 @@
       }
       
       function init(){
+ 
           var courseName=api.pageParam.courseName;
           var teacherName=api.pageParam.teacherName;
           var teacherHonor=api.pageParam.teacherHonor;
-          var buyTime='购买时间： '+formatDate(api.pageParam.buyTime,'Y')+'年'+formatDate(api.pageParam.buyTime,'M')+'月'+formatDate(api.pageParam.buyTime,'D')+'日';
-          var effectiveDay='有效时间： '+api.pageParam.effectiveDay+'天';
+          //var buyTime='购买时间： '+formatDate(api.pageParam.buyTime,'Y')+'年'+formatDate(api.pageParam.buyTime,'M')+'月'+formatDate(api.pageParam.buyTime,'D')+'日';
+          var subjectName = '证书名称： '+ api.pageParam.subjectName;
+          var expirationDate='有效时间： '+api.pageParam.expirationDate+'天';
           $('.courseImg').css('background-image','url('+static_url+api.pageParam.courseImg+')');
           $('.avatar-dl dt').html(teacherName);
           $('.avatar-dl dd').html(teacherHonor);
-          $('.cotime li').eq(0).html(buyTime);
-          $('.cotime li').eq(1).html(effectiveDay);
+          $('.cotime li').eq(0).html(subjectName);
+          $('.cotime li').eq(1).html(expirationDate);
           $('.avatar').attr('src',static_url+api.pageParam.teacherImage);
           $('#courseName').html(courseName);
           var htm="激活课程后即可正常学习，请注意，激活动作无法撤销，此课程一旦激活将在"+api.pageParam.effectiveDay+"天后失效，失效后将无法继续学习。请在有效期内合理安排学习进度。";//激活此课程同时会激活"+courseName+"串讲课";
@@ -135,7 +137,11 @@
           var param = {};
           param.courseId = api.pageParam.courseId;
           param.token = $api.getStorage('token');
-          param.isU = api.pageParam.isU;
+          if(api.pageParam.isU == "2"){
+            param.isU = true;
+          }else{
+            param.isU = false;
+          }
           param.orderItemId = data.orderID_item_id;
           param.examTime = $('select[name=setTime]').val();
           api.showProgress({
@@ -143,7 +149,7 @@
               title: '激活中',
               modal: false
           });
-          ajaxRequest('api/v2/course/active', 'get', param, function (ret, err) {//008.002激活课程
+          ajaxRequest('api/business/order/courseActive/v1.0', 'get', param, function (ret, err) {//008.002激活课程
               api.hideProgress();
               if (err) {
                   api.toast({

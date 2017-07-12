@@ -170,10 +170,11 @@ function init_data() {
     var content = doT.template(tpl)(mydata);
     $('body').removeClass('null');
     $('#content').html('');
-    $('#content').html(content);
+    $('#content').html(content); 
     get_percent();
     circleProgress();
     init_check();
+    api.parseTapmode();
     if(api.pageParam.courseId){
         $(".cache-list dl,.cache-list dl.haschild").css({"padding-left":"0.3rem"});
     }
@@ -232,12 +233,13 @@ function set_data(num) {
     //2:根据couselist获取所有缓存课程的章节详情，如果在线，从服务器获取，否则本地数据库获取
     initDom();
     clearInterval(getStatusTime);
+    
     getStatusTime = setInterval(function(){
-        if($api.getStorage("video-cacheTime") == "false"){
+        if($api.getStorage("video-cacheTime") == "false" || $('.down-progress[type="1"]').length<1){
             clearInterval(getStatusTime);
         }
         getdownrecord();
-    },1000)
+    },3000)
 
 }
 //测试
@@ -263,31 +265,31 @@ function initDom() {
             $('#content').css({"padding-top":"1.25rem"});
         }
 
-           cache_model.getCourseJsonWithCourseId(param,function(ret,err){ 
-
-               if(JSON.parse(ret.data).length<1){
-                    $('#content').html('');
-                    $('body').addClass('null');
-                    api.hideProgress();
-                    return false;
-               }
-                $.each(JSON.parse(ret.data),function(k,v){
-                    var ret_data = JSON.parse(v.courseJson);
-                    var res = {
-                        data: ret_data[0]
-                    };
-                    mydata.push(res); 
-                    
-                })
+       cache_model.getCourseJsonWithCourseId(param,function(ret,err){  
+           if(JSON.parse(ret.data).length<1){
+                $('#content').html('');
+                $('body').addClass('null');
+                api.hideProgress();
+                return false;
+           }
+            $.each(JSON.parse(ret.data),function(k,v){
+                var ret_data = JSON.parse(v.courseJson);
+                var res = {
+                    data: ret_data[0]
+                };
+                mydata.push(res); 
                 
-                init_data();
-                initDomDownStatus();
-                //处理圈圈
-                isSolidcircle('circle', '', '');
-                showCacheList();
-
-           })
-        }
+            })
+            
+            
+            init_data();
+            initDomDownStatus();
+            //处理圈圈
+            circleProgress();
+            showCacheList();
+            
+       })
+    }
 
 function initDomDownStatus(){
         if(isEmpty($api.getStorage("videochangelist"))){
@@ -322,8 +324,6 @@ function initDomDownStatus(){
         init_process();
         //    ------------------设置结束--------------------------
     
-       
-
         
     }
     function setCapterState(){
@@ -354,7 +354,8 @@ function initDomDownStatus(){
              }
              // taskList.html(domprogress);
         })
-
+        
+     
     }
 function showCacheList(){
     $.each($(".cache-course"),function(kk,vv){
@@ -835,8 +836,11 @@ apiready = function() {
         $('.icon-check').removeClass('active');
         clearInterval(getStatusTime);
         getStatusTime = setInterval(function(){
+            if($('.down-progress[type="1"]').length<1){
+                clearInterval(getStatusTime);
+            }
             getdownrecord();
-        },2000)
+        },3000)
 
     });
     api.addEventListener({
@@ -961,7 +965,8 @@ function next(leave, num1, num2, num3,courseId) {
         if (isEmpty(tmp_course_detail)) {
             //获取课程的详细信息
             //api/v2.1/course/courseDetail，接口编号：004-006
-            ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+            // ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+            ajaxRequest('api/teachsource/course/courseDetail', 'get', {
                 courseId: courseId
             }, function (ret, err) {//004.006获取课程的详细信息
                 if (err) {

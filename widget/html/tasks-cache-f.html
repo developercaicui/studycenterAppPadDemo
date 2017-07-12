@@ -23,21 +23,28 @@
       .chapter-task li {
           color:#000;
           display: table;
+          height:1.6rem;
       }
 
       .chapter-task li p span {
          color:#000;
       }
       .chapter-task li .v-name span:nth-child(1) {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          width: 3.2rem;
+          top: -0.45rem;
+          color: #00a085;
+          font-size: .3rem;
+          float: right;
+          right: -19.6%;
+          left: initial;
+          width: initial;
+      }
+      .chapter-task li .v-name span:nth-child(1) b{
+          font-weight: normal;
       }
       .chapter-task li .v-name span:nth-child(2) {
           position: absolute;
           right: -37%;
-          top: -0.05rem;
+          top: -0.36rem;
           color: #00a085;
           font-size: .3rem;
       }
@@ -57,7 +64,7 @@
           width: 0.64rem;
       }
       .chapter-task li .v-progress {
-          width: 75%;
+          width: 88%;
           background-color: #b7e6de;
       }
       .about-video-content ul li {
@@ -70,6 +77,7 @@
           color: #00a186;
           position: absolute;
           right: 0;
+          height: 0.7rem;
       }
       .chapter-task .icon-check {
            display: none; 
@@ -123,7 +131,7 @@
     .down-progress .ing i:before,
     .down-progress[type='1'] i:before {
       content: '\e972';
-      font-size: 0.25rem;
+      font-size: 0.3rem;
     }
     .down-progress[status='wait'] i:before,
     .down-progress.wait i:before,
@@ -131,6 +139,9 @@
      .down-progress[type='5'] i:before {
       content: '\e973';
       font-size: 0.4rem;
+    }
+    .down-progress i{
+      top:45%;
     }
     </style>
   </head>
@@ -145,20 +156,28 @@
           {{~val.children:val2:key2}}<ul>
           {{ if(val2.isLeaf=='false'){ }}
           {{~val2.children:val3:key3}}
-          
+          <ul class="list">
+          <li class="list chapt{{=val3.chapterId}}" style="display: none;line-height: 1.6rem;padding-left: 0.9rem; ">
+              <dl class="haschild">
+                <dt>
+                  <p style="line-height: 1.6rem;font-size: 0.3rem;color:#666666;font-weight: bold;">{{=val3.chapterTitle}}</p>
+                </dt>
+                
+              </dl>
+            </li>
             {{~val3.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
             <li class="video-catego" style="display: none;"><span class="taskVideo"></span>
             <div>
                   <dl class="taskList">
-                    <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val3.chapterId}}')">
-                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
-                      <p class="v-name"><span class="span11"></span><span></span></p>
+                    <dt  tapmode="" onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val3.chapterId}}')">
+                      <p style="color:#666666;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: bold;">{{=val4.title}}</p>
+                      <p class="v-name"><span class="span11"><b>50MB</b></span><span></span></p>
                       <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
                     </dt>
                     <dd>
                       <i dataid="{{=val3.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
-                      <div id="{{=val3.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="{{=val3.chapterId}}" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="{{=val3.chapterTitle}}" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
+                      <div id="{{=val3.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="{{=val3.chapterId}}" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="{{=val3.chapterTitle}}" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" tapmode="" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
                     <div class="val"></div>
                   </div>
                   <div class="down_data none">{{=JSON.stringify(val4)}}</div>
@@ -169,21 +188,30 @@
             {{ } }}
             {{~}}
             {{~}}
-
+</ul>
           {{ }else{ }}
+            <ul class="list">
+          <li class="list chapt{{=val2.chapterId}}" style="display: none;line-height: 1.6rem;padding-left: 0.9rem; ">
+              <dl class="haschild">
+                <dt>
+                  <p style="line-height: 1.6rem;font-size: 0.3rem;color:#666666;font-weight: bold;">{{=val2.chapterTitle}}</p>
+                </dt>
+                
+              </dl>
+            </li>
             {{~val2.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
             <li class="video-catego" style="display: none;"><span class="taskVideo"></span>
             <div>
                   <dl class="taskList">
-                    <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val2.chapterId}}')">
-                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
-                      <p class="v-name"><span class="span11"></span><span></span></p>
+                    <dt  tapmode="" onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val2.chapterId}}')">
+                      <p style="color:#666666;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: bold;">{{=val4.title}}</p>
+                      <p class="v-name"><span class="span11"><b>50MB</b></span><span></span></p>
                       <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
                     </dt>
                     <dd>
                       <i dataid="{{=val2.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
-                      <div id="{{=val2.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
+                      <div id="{{=val2.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="{{=val2.chapterId}}" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="{{=val2.chapterTitle}}" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" tapmode="" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
                     <div class="val"></div>
                   </div>
                   <div class="down_data none">{{=JSON.stringify(val4)}}</div>
@@ -196,20 +224,30 @@
           {{ } }}
           {{~}}
         </li>
+        </ul>
       {{ }else{ }}
+      <ul class="list">
+          <li class="list chapt{{=val.chapterId}}" style="display: none;line-height: 1.6rem;padding-left: 0.9rem; ">
+              <dl class="haschild">
+                <dt>
+                  <p style="line-height: 1.6rem;font-size: 0.3rem;color:#666666;font-weight: bold;">{{=val.chapterTitle}}</p>
+                </dt>
+                
+              </dl>
+            </li>
         {{~val.tasks:val4:key4}}
             {{ if(val4.taskType=='video'){ }}
             <li class="video-catego" style="display: none;width: 100%;padding-top: 0.2rem;border-bottom: 1px solid #d4d4d4;"><span class="taskVideo"></span>
             <div>
                   <dl class="taskList">
-                    <dt tapmode  onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val.chapterId}}')">
-                      <p style="color:#000;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{=val4.title}}</p>
-                      <p class="v-name"><span class="span11"></span><span></span></p>
+                    <dt  tapmode="" onclick="task_event(this,'{{=key4}}','{{=val4.taskId}}','{{=val.chapterId}}')">
+                      <p style="color:#666666;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: bold;">{{=val4.title}}</p>
+                      <p class="v-name"><span class="span11"><b>50MB</b></span><span></span></p>
                       <p class="v-progress"><span style="font-size: 0;" data-taskid="{{=val.taskId}}" class="taskProgress"></span></p>
                     </dt>
                     <dd>
                       <i dataid="{{=val.chapterId}}" dataccid="{{=val4.videoCcid}}" class="icon-check chapterb"></i>
-                      <div id="{{=val.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
+                      <div id="{{=val.chapterId}}" courseid="{{=it.courseId}}" chapterida="{{=val.chapterId}}" chapteridb="" chapteridc="" chapterNamea="{{=val.chapterTitle}}" chapterNameb="" chapterNamec="" courseName="{{=it.courseName}}" versionid="{{=it.versionId}}" type="3" tapmode="" onclick="down(this)" class="down-progress task{{=val4.videoCcid}}"><i class="icon-down1"></i>
                     <div class="val"></div>
                   </div>
                   <div class="down_data none">{{=JSON.stringify(val4)}}</div>
@@ -219,6 +257,7 @@
             </li>
             {{ } }}
             {{~}}
+            </ul>
       </ul>{{ } }}
       {{~}}
     </script>
@@ -392,7 +431,8 @@
           if (isEmpty(tmp_course_detail)) {
               //获取课程的详细信息
               //api/v2.1/course/courseDetail，接口编号：004-006
-              ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+              // ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+              ajaxRequest('api/teachsource/course/courseDetail', 'get',{
                   courseId: courseId
               }, function (ret, err) {//004.006获取课程的详细信息
                   if (err) {

@@ -17,6 +17,7 @@ var chapters_child_info = '';
 //当前二级章节信息
 var task_info = '';
 var is_debug=false;
+var videoData;
 
 var  memberId;
 function my_data(){
@@ -33,10 +34,11 @@ if(is_debug){
 }
 var getStatusTime = null;
 var videoDownInfo =new Object(); //缓存每个节点的下载状态，一个节点一个id
-var videochangelist = $api.getStorage("videochangelist") ? $api.getStorage("videochangelist") : ""; //记录每次定时器和数据库同步数据后发生改变的dom节点id
+var videochangelist = ""; //记录每次定时器和数据库同步数据后发生改变的dom节点id
 var couselist = ""; //记录缓存包括的课程id
 var lastgettime = 1388509261;//记录每次获取数据库的时间点，下次获取就只获取该时间点之后变化的记录(第一次获取可以获取2014年1月1日1时1分1秒//)
 function getData() {
+	lastgettime = 1388509261;
 	$api.setStorage("closeSetTimeOut",false);
 	api.showProgress({
        title: '加载中',
@@ -44,7 +46,8 @@ function getData() {
 	});
 	cache_model = api.require('lbbVideo');
 function getdownrecord(){
-    
+    videoDownInfo =new Object(); //缓存每个节点的下载状态，一个节点一个id
+    videochangelist = ""; //记录每次定时器和数据库同步数据后发生改变的dom节点id
     var param = {
         "userId" : getstor('memberId'),
         "readTime" : lastgettime
@@ -54,7 +57,7 @@ function getdownrecord(){
         //------------------结束获取--------------------------
      	var usedTime,speedDown;
         var saverecordObj = JSON.parse(ret.data);
-       // alert(JSON.stringify(ret))
+        console.log(JSON.stringify(saverecordObj))       
         ///设置下一次读取下载的某个时间之后变化的所有记录
         lastgettime = saverecordObj.readTime;
         //循环处理每一条返回的下载记录，并统计分析最后变化值
@@ -141,20 +144,18 @@ function procRecord(videorecord){
                 videoDownInfo[strs[j]].status = videorecord.state;
             }
         }
-    }
-    
-    
-    $api.setStorage("videochangelist",videochangelist);
+    } 
+    // $api.setStorage("videochangelist",videochangelist);
     initDomDownStatus();
 }
 
 //更新界面下载状态有变化的下载节点
 function initDomDownStatus(){
-    if(isEmpty($api.getStorage("videochangelist"))){
+    if(isEmpty(videochangelist)){
         return false;
     }
 
-    var strs = $api.getStorage("videochangelist").split(","); //字符分割
+    var strs = videochangelist.split(","); //字符分割
     var pathlen = strs.length;
     //从1开始，因为拼接videochangelist的时候用,开始的
     // alert(strs+"====="+JSON.stringify(videoDownInfo))
@@ -185,49 +186,10 @@ function initDomDownStatus(){
 function initDom(){
 	var Course_info=$api.getStorage('Course_info');
     courseId = Course_info.courseId;
-    if(api.connectionType == 'none' || api.connectionType == 'unknown'){
-        // api.toast({
-        //     msg : '网络已断开，请检查网络状态',
-        //     location : 'middle'
-        // });
-//     api.showProgress({
-//	       title: '加载中',
-//	       modal: true
-//	  	});		
-        cache_model.getCourseJsonWithCourseId({"userId":getstor('memberId'),"courseId":courseId},function(ret,err){
-				if(isEmpty(ret)){
-					return false;
-				}
-        		var ret_data = JSON.parse(JSON.parse(ret.data)[0].courseJson);
-                course_detail = ret_data[0];
-                var tpl = $('#tpl').html();
-                var content = doT.template(tpl);
-                //课程状态
-                getVersionId(ret_data[0])
-
-                api.getFreeDiskSpace(function(ret, err) {
-                    var size = (ret.size / 1000 / 1000).toFixed(2);
-                    var htm = "<div class='avaiace'  onclick='to_cache()'><span class='manage'>课程缓存管理</span><p class='space'>可用空间" + size + "MB<span></span></p></div>";
-                    htm = htm + content(ret_data[0]);
-                    $('#content').html(htm);
-                    initDomDownStatus();
-                    // setTask();
-                    //处理圈圈
-                    isSolidcircle('circle', '', '');
-                    init_process();
-                    api.hideProgress();
-                });
-                
-            })
-    }else{
-//  	api.showProgress({
-//	       title: '加载中',
-//	       modal: true
-//	  	});
-
      var param = {};
      param.courseId = courseId;
-     ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function(ret, err) {
+     // ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function(ret, err) {
+     ajaxRequest('api/teachsource/course/courseDetail', 'get', param, function(ret, err) {
          api.parseTapmode();
          if (err) {
              /*api.toast({
@@ -245,20 +207,40 @@ function initDom(){
              }
              var ret_data = ret.data;
              course_detail = ret_data[0];
-
              //课程状态
              getVersionId(ret_data[0]);
+    		 
+             // ajaxRequest({ 'origin': 'http://192.168.10.112:8083/', 'pathname': 'api/v2.1/course/getVideoDetail' }, 'get', {"taskId":"8a22ecb55575d41f015576a3ccae002f"}, function(res, err) {
+             // 	if(res.state == "success"){
+             		
+	     		api.getFreeDiskSpace(function(ret, err) {
+	                 var size = (ret.size / 1000 / 1000).toFixed(2);
+	                 var htm = "<div class='avaiace' tapmode onclick='to_cache()'><span class='manage'>缓存管理</span><p class='space'>可用空间" + size + "MB<span></span></p></div>";
+	                 
+	                 // course_detail = courseVideoDetail(course_detail,res.data);
+	            	 // $api.setStorage(courseId,course_detail)
+	                 htm = htm + content(ret_data[0]);
+	                 $('#content').html(htm);
+	                 initDomDownStatus();
+	                 api.parseTapmode();
+	                 //处理圈圈
+	                 isSolidcircle('circle', '', '');
+	                 init_process();
 
-             api.getFreeDiskSpace(function(ret, err) {
-                 var size = (ret.size / 1000 / 1000).toFixed(2);
-                 var htm = "<div class='avaiace' onclick='to_cache()'><span class='manage'>缓存管理</span><p class='space'>可用空间" + size + "MB<span></span></p></div>";
-                 htm = htm + content(ret_data[0]);
-                 $('#content').html(htm);
-                 initDomDownStatus();
-                 //处理圈圈
-                 isSolidcircle('circle', '', '');
-                 init_process();
-              // api.hideProgress();
+	                 clearInterval(getStatusTime);
+					getStatusTime = setInterval(function(){
+					    getdownrecord();
+					    
+					    setSpace();
+
+					    if($api.getStorage("closeSetTimeOut") == "true"){
+					    	clearInterval(getStatusTime);
+					    }
+					},2000)
+	                 api.hideProgress();
+             	// 	})
+             	// }  
+              // 
              });
          } else {
       	// api.hideProgress();
@@ -268,23 +250,15 @@ function initDom(){
              });
          }
      });
-    }
-     
+	   
 }
+	
+	//1:获取所有下载记录并解析
+	getdownrecord();
+	//2:根据couselist获取所有缓存课程的章节详情，如果在线，从服务器获取，否则本地数据库获取
+	initDom();
 
-clearInterval(getStatusTime);
-//1:获取所有下载记录并解析
-getdownrecord();
-//2:根据couselist获取所有缓存课程的章节详情，如果在线，从服务器获取，否则本地数据库获取
-initDom();
-
-getStatusTime = setInterval(function(){
-    getdownrecord();
-    setSpace();
-    if($api.getStorage("closeSetTimeOut") == "true"){
-    	clearInterval(getStatusTime);
-    }
-},1000)
+	
 //3:定时器调用获取变化的数据，并调整界面下载状态
 // getdownrecord();
 //
@@ -298,28 +272,23 @@ getStatusTime = setInterval(function(){
 //     $('#content').html(content(data));
 //     isSolidcircle('circle', '', '');
 //     init_process();
-    
- 
-    
-    $('.bewrite .bewtitl').parent().siblings().css({
-		height : '0px'
-	});
+
 }
 
 function setSpace(){
 	//设置下载速度
 	cache_model.getCurrentDownloadVideoSize({"userId" : getstor('memberId')},function(ret,err){
-    	
     	var videoId = ret.currentVideoId;
     	if(ret.data == -1){
        		$('.down_speed').addClass("none");
        		return false;
        	}
+ //       	console.log(JSON.stringify(ret))
        	api.getFreeDiskSpace(function(ret, err) {
 	         var size = (ret.size / 1000 / 1000).toFixed(2);
 	         if (Math.ceil(size) < 300) {
                 clearInterval(down_timer);
-                clearTimeout(down_setTimeout);
+                //// clearTimeout(down_setTimeout);
                 clearInterval(getStatusTime);
                 $('.down-progress[type="1"]').attr({
                     type : 2
@@ -328,6 +297,8 @@ function setSpace(){
                     msg : '可用空间不足,下载已暂停',
                     location : 'middle'
                 });
+                cache_model.downloadStop({"userId":getstor('memberId')},function(ret, err) {
+		        });
              } else {
                 $(".space").html("可用空间" + size + "MB<span></span>");
                 
@@ -335,28 +306,25 @@ function setSpace(){
 	    });
 	   
    		var speedT = $api.getStorage("speedT"+videoId) ? $api.getStorage("speedT"+videoId) : 0;  		
+   		
    		$api.setStorage("speedT"+videoId,ret.data);  		
    		speedTime = ret.data - speedT;	
    		if(speedTime<0){
    			speedTime = 0;
-   		}		 
+   		}	
+
 		var down_speed = getFormatSize(speedTime);
 		$('.down_speed').addClass("none");
-       	$('.down-progress[type="1"]').siblings('.down_speed').html(down_speed).removeClass('none');
-	
+       	$('.task'+videoId).siblings('.down_speed').html(down_speed).removeClass('none');
    })
 
 }
 
-function setTask(){
-    //console.log( $(".down_data"))
-    $(".down_data").each(function(){
-        var videoId = JSON.parse($(this).html()).videoCcid;
-        get_dowm2(videoId);
-        init_process();
-    })
-}
 function init_process(){
+	//Android可用空间icon位置调整
+	if(api.systemType != "ios"){
+    	$(".space span").css({"margin-top":"0.6rem"});
+    }
     circleProgress();
     //圆形进度条绘制
     $.each($('.down-progress'), function(k, v) {
@@ -400,21 +368,37 @@ apiready = function() {
   	api.addEventListener({
   		name : 'flush_catalog'
   	}, function(ret) {
-  		lastgettime = 1388509261;
-        videochangelist = "";
-        couselist = "";
-        videoDownInfo = new Object();
-        getdownrecord();
-  		getData();
+  		clearInterval(getStatusTime);
+  		getStatusTime = setInterval(function(){
+            getdownrecord();
+            
+            setSpace();
+            
+            if($api.getStorage("closeSetTimeOut") == "true"){
+                clearInterval(getStatusTime);
+            }
+        },2000)
   	});
-    $('.circle_btn').click(function() {
-        if ($(this).find('.active_btn').hasClass('hide')) {
-            $(this).find('.active_btn').removeClass('hide');
-        } else {
-            $(this).find('.active_btn').addClass('hide');
-        }
+  	api.setRefreshHeaderInfo({
+        visible: true,
+        loadingImg: 'widget://image/arrow-down-o.png',
+        bgColor: '#f3f3f3',
+        textColor: '#787b7c',
+        textDown: '下拉更多',
+        textUp: '松开刷新',
+        showTime: false
+    }, function (ret, err) {
+        getData();
     });
+    // $('.circle_btn').click(function() {
+    //     if ($(this).find('.active_btn').hasClass('hide')) {
+    //         $(this).find('.active_btn').removeClass('hide');
+    //     } else {
+    //         $(this).find('.active_btn').addClass('hide');
+    //     }
+    // });
 };
+
 function set_down_status(str){
     //var data=JSON.parse(str);
     var data = str;
@@ -432,7 +416,6 @@ function set_down_status(str){
     if(!isEmpty(chapterIdC) && !isEmpty(chapterIdA) && !isEmpty(chapterIdB)) id=chapterIdC;
     // var obj = $('#' + id);
     var obj = $('.task' + item);
-
     switch (type) {
         case 'error':
             $('.down-progress[type="1"]').attr({
@@ -474,7 +457,7 @@ function set_down_status(str){
             break;
         case 'less_space':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -489,7 +472,7 @@ function set_down_status(str){
             break;
         case 'not_wifi':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -504,7 +487,7 @@ function set_down_status(str){
             break;
         case 'deny_down':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -519,7 +502,7 @@ function set_down_status(str){
             break;
         case 'shut_network':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -535,7 +518,7 @@ function set_down_status(str){
             break;
         case 'wait':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 'type' : 2
@@ -544,12 +527,12 @@ function set_down_status(str){
         case '1':
         case 1:
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             //下载中->暂停
-            // $('.down-progress[type="1"]').attr({
-            //     type : 2
-            // }).siblings('.down_speed').html('').addClass('none');
+            $('.down-progress[type="1"]').attr({
+                type : 2
+            }).siblings('.down_speed').html('').addClass('none');
 
             $(obj).attr({
                 'type' : 2
@@ -558,10 +541,10 @@ function set_down_status(str){
         case '2':
         case 2:
             //暂停->下载中
-            // $('.down-progress[type="1"]').attr({
-            //     type : 2
-            // });
-            // $('.down_speed').html('').addClass('none');
+            $('.down-progress[type="1"]').attr({
+                type : 2
+            });
+            $('.down_speed').html('').addClass('none');
             $(obj).attr({
                 type : 2
             });
@@ -649,7 +632,7 @@ function set_down_status(str){
             break;
         case 'end':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+         //   clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 4
@@ -658,79 +641,7 @@ function set_down_status(str){
     }
 }
 
-function getVersionId(data){
-    var versionId = data.versionId;
-    var coursestatus ={};
-    ajaxRequest('api/v2.1/study/coursestatus', 'get',{"token":$api.getStorage('token'),"versionId":versionId}, function(ret, err) {
-        if(ret.state == "success"){
-            var lockStatusNum = 0;
-            for(var i=0;i<ret.data.length;i++){
-                if(ret.data[i].lockStatus == 0){
-                    lockStatusNum = i;
-                }   
-            }
-            coursestatus.islock = ret.data[lockStatusNum].lockStatus;
-            coursestatus.activestate = ret.data[lockStatusNum].activeState;
-            coursestatus.expirationTime = ret.data[lockStatusNum].expirationTime;
-            if(ret.data[lockStatusNum].activeState == "acitve"){
-                coursestatus.isbuy = 1;
-            }                   
-            $api.setStorage("coursestatus"+versionId,coursestatus)
-        }
-    })
-} 
-//获取章节列表
-function getChapterList(flag) {
-    setTimeout(function(){
-        api.refreshHeaderLoadDone();
-    },300);
-	var tpl = $('#tpl').html();
-	var content = doT.template(tpl);
-	
-	$('#content').html(content(course_detail));
-    circleProgress();
-    api.hideProgress();
-    $.each($('.down-progress'), function(k, v) {
-        var num = parseInt($(v).find('.val').html());
-        if (!isEmpty(num)) {
-            var percent = num / 100, perimeter = Math.PI * 0.9 * $('#svgDown').width();
-            $(v).find('circle').eq(1).css('stroke-dasharray', parseInt(perimeter * percent) + " " + parseInt(perimeter * (1 - percent)));
-        }
-    });
-    //初始化下载状态
-    var memberId = getstor('memberId');
-    //初始化下载状态
-    var downed = $api.getStorage(memberId+'downed');
-    if (downed) {
-        var chapterIdA = get_loc_val(memberId + 'downed', 'chapterIdA'),chapterIdB = get_loc_val(memberId + 'downed', 'chapterIdB'),chapterIdC = get_loc_val(memberId + 'downed', 'chapterIdC'), progress = get_loc_val(memberId + 'downed', 'progress');
-        var id='';
-        //一级章节下载记录
-        if(!isEmpty(chapterIdA) && isEmpty(chapterIdB) && isEmpty(chapterIdC)) id=chapterIdA;
-        //二级章节下载记录
-        if(!isEmpty(chapterIdA) && !isEmpty(chapterIdB) && isEmpty(chapterIdC)) id=chapterIdB;
-        //三级章节下载记录
-        if(!isEmpty(chapterIdC) && !isEmpty(chapterIdA) && !isEmpty(chapterIdB)) id=chapterIdC;
-        if (progress == 100) {
-            $("#" + id).attr({
-                'type' : 4
-            });
-        } else {
-            $("#" + id).attr({
-                'type' : 1
-            });
-        }
-    }else{
-        $('.down-progress[type="1"]').attr({
-            type : 2
-        });
-    }
-    if(!flag){
-        //api.parseTapmode();
-        $('.is_noing').css('display', 'none');
-        //不是当前章节就隐藏掉
-        isSolidcircle('circle', '', '');
-    }
-}
+
 
 function to_cache(name) {
 	clearInterval(getStatusTime);

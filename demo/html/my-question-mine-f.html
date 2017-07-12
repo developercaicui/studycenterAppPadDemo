@@ -29,7 +29,9 @@
           param.pageSize = pageSize;
           param.pageNo = page;
           param.token = $api.getStorage('token');
-          ajaxRequest('api/v2.1/learning/learningcourse', 'get', param, function (ret, err) {
+          // ajaxRequest('api/v2.1/learning/learningcourse', 'get', param, function (ret, err) {
+          ajaxRequest('api/business/learning/learningcourse/v1.0', 'get', param, function (ret, err) {
+  
               api.parseTapmode();
               if (err) {
                   api.toast({

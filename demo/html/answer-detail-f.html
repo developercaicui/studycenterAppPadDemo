@@ -58,7 +58,7 @@
               <div class="footer">
                 <div class="count"><i class="icon-replys"></i><span>{{=isEmpty(it.replyCount)?'0':it.replyCount }}</span></div>
                 <div class="time"><span>{{ if(!isEmpty(it.updateTime))  { }}{{=formatDate(it.updateTime,'Y')+'-'+formatDate(it.updateTime,'M')+'-'+formatDate(it.updateTime,'D')}} {{ } }}</span><span>{{ if(!isEmpty(it.updateTime))  { }}{{=formatDate(it.updateTime,'h')+':'+formatDate(it.updateTime,'m')}} {{ } }}</span></div>
-                <div class="course-name">{{if(it.askprogress != '-1' && it.courseId && it.courseId != ' ' && it.chapterId && it.chapterId != ' ' && it.taskId && it.taskId != ' '){ }}<span class="tag-video-time"><i class="icon-play-o"></i><span tapmode onclick="jump_task('{{=it.taskprogress}}','{{=it.courseId}}','{{=it.taskId}}')">{{=formatType(it.taskType,it.taskprogress)}}</span></span>{{ } }}
+                <div class="course-name">{{if(it.taskType == 'video' &&　it.askprogress != '-1' && it.courseId && it.courseId != ' ' && it.chapterId && it.chapterId != ' ' && it.taskId && it.taskId != ' '){ }}<span class="tag-video-time"><i class="icon-play-o"></i><span tapmode onclick="jump_task('{{=it.taskprogress}}','{{=it.courseId}}','{{=it.taskId}}')">{{=formatType(it.taskType,it.taskprogress)}}</span></span>{{ } }}
                   {{ if(it.coursename && it.coursename != null){ }}<span class="course-tit"> {{=it.coursename}}</span>{{ } }}
                 </div>
               </div>
@@ -207,19 +207,19 @@
                   if (isEmpty(ret.data.id)) {
                       is_loaded = true;
                   }
-                  if(!isEmpty(ret.data.replys.length)&&ret.data.replys.length>0) {
+                  if(!isEmpty(ret.data.replys)&&ret.data.replys.length>0) {
                       api.sendEvent({
                           name: 'answerChange'
                       });
                   }
                   if(page == 1){
                       $('#content1').html(content1(ret.data));
-                      if (!isEmpty(ret.data.replys.length)&&ret.data.replys.length > 0) {
+                      if (!isEmpty(ret.data.replys)&&ret.data.replys.length > 0) {
                           content2 = doT.template(tpl_con2);
                           $('#content2').html(content2(ret.data.replys));
                       }
                   }else{
-                      if (!isEmpty(ret.data.replys.length)&&ret.data.replys.length > 0) {
+                      if (!isEmpty(ret.data.replys)&&ret.data.replys.length > 0) {
                           content2 = doT.template(tpl_con2);
                           $('#content2').append(content2(ret.data.replys));
                       }

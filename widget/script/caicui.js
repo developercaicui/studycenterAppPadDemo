@@ -856,7 +856,8 @@ function jump_task(taskprogress,courseId ,taskid){
             });
             //获取课程的详细信息
             //api/v2.1/course/courseDetail，接口编号：004-006
-            ajaxRequest('api/v2.1/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {//004.006获取课程的详细信息
+            // ajaxRequest('api/v2.1/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {//004.006获取课程的详细信息
+                ajaxRequest('api/teachsource/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {//004.006获取课程的详细信息
                 if (err) {
                     api.hideProgress();
                     api.toast({
@@ -953,6 +954,7 @@ function buys(id, goods_price) {
         iap.getProducts({
                 productIds: [goods_id]
         }, function(res, err) {
+            console.log(JSON.stringify(res))
                 if (res) {
                         if (res.products) {
                                 iap.purchase({

@@ -112,7 +112,6 @@ apiready = function() {
         last_progress = api.pageParam.last_progress;
     }
     task_arr = save_tasks(course_detail);
-
     task_info_detail = task_arr[task_info.taskId];
     //获取章节信息
     //getChapterInfo();
@@ -259,7 +258,8 @@ function check_net(videoid) {
 //播放视频函数
 function play_video() {
     getCCconfig(function(CCconfig){
-        if(CCconfig) {
+        if(CCconfig) {   
+            demo.init();    
             var UserId = task_info.videoSiteId;
             if(api.systemType == 'android'){
                 api.setFullScreen({
@@ -272,7 +272,7 @@ function play_video() {
             if(newProgress){
                 last_progress = DB.getTaskProgressSync(task_info.taskId).progress;            
             }
-            if(last_progress == videoTimes){
+            if( last_progress == videoTimes || last_progress == (videoTimes-1) || last_progress == (videoTimes+1)){
                 last_progress = 0;
             }
             //alert(UserId+'====='+(isEmpty(CCconfig[UserId]) ? 0 : 1));
@@ -304,7 +304,7 @@ function play_video() {
                     break;
             }
 
-            param.definition=quilty;
+            param.definition = quilty;
             if(!is_check) {
                 check_net(videoid);
             }

@@ -39,7 +39,7 @@
               <div class="footer">
                 <div class="count"><i class="icon-replys"></i><span>{{=isEmpty(it[p].replyCount)?'0':it[p].replyCount }}</span></div>
                 <div class="time"><span>{{ if(!isEmpty(it[p].updateTime)) { }}{{=formatDate(it[p].updateTime,'Y')+'-'+formatDate(it[p].updateTime,'M')+'-'+formatDate(it[p].updateTime,'D')}} {{=formatDate(it[p].updateTime,'h')+':'+formatDate(it[p].updateTime,'m')}} {{ } }}</span></div>
-                <div class="course-name">{{if(it[p].askprogress != '-1' && it[p].courseId && it[p].courseId != ' ' && it[p].chapterId && it[p].chapterId != ' ' && it[p].taskId && it[p].taskId != ' '){ }}
+                <div class="course-name">{{if(it[p].taskType == "video" && it[p].taskprogress != '-1' && it[p].courseId && it[p].courseId != ' ' && it[p].chapterId && it[p].chapterId != ' ' && it[p].taskId && it[p].taskId != ' '){ }}
                   <div class="tag-video-time"><i class="icon-play-o"></i><span>{{=formatType(it[p].taskType,it[p].taskprogress)}}</span></div>{{ } }}
                   {{if(!isEmpty(it[p].coursename)) { }}<span class="course-tit"> {{=it[p].coursename}}</span>{{ } }}
                 </div>

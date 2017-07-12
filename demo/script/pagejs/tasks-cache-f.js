@@ -18,6 +18,7 @@ var is_debug = false;
            var task_tpl = $('#task_tpl').html();
           var content = doT.template(task_tpl);
           $('#chaTask').html(content(arr)).show();
+
           init_check();
           return false;
         }
@@ -33,7 +34,7 @@ var is_debug = false;
     var strs = $api.getStorage("videochangelist").split(","); //字符分割
     var pathlen = strs.length;
     //从1开始，因为拼接videochangelist的时候用,开始的
-    // alert(strs+"====="+JSON.stringify(videoDownInfo))
+    $(".chapt"+api.pageParam.chapterId).show();
     for (j=1; j<pathlen;j++ ){
         var domInfo = videoDownInfo[strs[j]];
 		var domid = strs[j];
@@ -42,6 +43,8 @@ var is_debug = false;
             var domprogress = videoDownInfo[strs[j]].progress;
             var domstatus = videoDownInfo[strs[j]].status;
             var domtasknum = videoDownInfo[strs[j]].tasknum;
+            var totalSize = videoDownInfo[strs[j]].totalSize;
+            var downloadSize = videoDownInfo[strs[j]].downloadSize;
             // ------------------设置界面对应id节点dom下载状态，并设置为可见--------------------------
 			//          alert(domid+"==="+api.pageParam.chapterId);
             if($(".task"+domid).attr("id") == api.pageParam.chapterId){
@@ -49,6 +52,14 @@ var is_debug = false;
                 $(".task"+domid).attr("type",domstatus);
 	            $(".task"+domid).find(".val").html(domprogress);
 	            $(".task"+domid).parent().prev().find(".v-progress").find("span").css("width",domprogress+"%");
+	            if(totalSize == -1){
+	            	$(".task"+domid).parent().prev().find(".v-name").find(".span11 b").text(getVideoSize(downloadSize));
+	            }else if(totalSize == "未知"){
+	            	$(".task"+domid).parent().prev().find(".v-name").find(".span11 b").text("大小未知");
+	            }else{
+	            	$(".task"+domid).parent().prev().find(".v-name").find(".span11 b").text(getVideoSize(totalSize));
+	            }
+	            
 //	            $(".task"+domid).parent().prev().find(".v-name").find("span").eq(1).text(Math.round(domprogress)+"%");
             }
             
@@ -83,11 +94,13 @@ var is_debug = false;
 	   		
 	      course_detail = ret_data[0];
 	      var content = doT.template(task_tpl);
-
+	      // getVersionId(ret_data[0])
 	      $('#chaTask').html(content(course_detail)).show();
+	      api.parseTapmode();
 	      initDomDownStatus();
 	      init_check();
 	      task_arr = save_tasks(course_detail);
+	      
       	  courseId = course_detail.courseId; //课程id
       	  var len = 0;
  		  $.each($(".video-catego"),function(k,v){
@@ -112,7 +125,7 @@ var is_debug = false;
 	             var size = (ret.size / 1000 / 1000).toFixed(2);
 	             if (Math.ceil(size) < 300) {
 	                clearInterval(down_timer);
-	                clearTimeout(down_setTimeout);
+	                //clearTimeout(down_setTimeout);
 	                clearInterval(getStatusTime);
 	                $('.down-progress[type="1"]').attr({
 	                    type : 2
@@ -128,13 +141,12 @@ var is_debug = false;
 	        });
 	   		var speedT = $api.getStorage("speedT"+videoId) ? $api.getStorage("speedT"+videoId) : 0;
 	   		$api.setStorage("speedT"+videoId,ret.data);
-	   		
 	   		speedTime = ret.data - speedT;	
 	   		if(speedTime<0){
 	   			speedTime = 0;
 	   		}		 
 			var down_speed = getFormatSize(speedTime);
-	       	$('.down-progress[type="1"]').parent().prev().find(".v-name").find("span").eq(1).text(down_speed);
+			$('.down-progress[type="1"]').parent().prev().find(".v-name").find("span").eq(1).text(down_speed);
 	       	$.each($('.down-progress[type="2"]'),function(){
 	       		$(this).parent().prev().find(".v-name").find("span").eq(1).text("等待中");
 	       	})
@@ -144,7 +156,7 @@ var is_debug = false;
 	       	$.each($('.down-progress[type="4"]'),function(){
 	       		$(this).parent().prev().find(".v-name").find("span").eq(1).text("完成");
 	       	})
-		
+
 	   })
 	}
     apiready = function(){
@@ -158,7 +170,7 @@ var is_debug = false;
       getStatusTime = setInterval(function(){
           getdownrecord();
           setSpeed();
-      },1000)
+      },2000)
       
 //    api.setRefreshHeaderInfo({
 //      visible: true,
@@ -175,11 +187,22 @@ var is_debug = false;
       api.addEventListener({
           name: 'flush_catalog'
       }, function(ret) {
+      		clearInterval(getStatusTime);
       		getStatusTime = setInterval(function(){
 	          getdownrecord();
 	          setSpeed();
-	      },1000)
+	      },2000)
       })
+      api.addEventListener({
+          name: 'open_getStatusTime'
+      }, function(ret) {
+      		clearInterval(getStatusTime);
+      		getStatusTime = setInterval(function(){
+	          getdownrecord();
+	          setSpeed();
+	      },2000)
+      })
+
       api.addEventListener({
           name: 'opena'
       }, function(ret) {
@@ -248,8 +271,13 @@ var is_debug = false;
           }
       });
 
-      
-    }
+     //监听关闭
+    api.addEventListener({
+        name : 'closeFrameAll'
+    }, function() {
+        api.closeFrame();
+    });
+}
       
 function init_check() {
 	$('.video-catego').on("click","dd",function() {
@@ -271,7 +299,8 @@ function next(obj, num1 , courseId) {
       if (isEmpty(tmp_course_detail)) {
           //获取课程的详细信息
           //api/v2.1/course/courseDetail，接口编号：004-006
-          ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+          // ajaxRequest('api/v2.1/course/courseDetail', 'get', {
+          ajaxRequest('api/teachsource/course/courseDetail', 'get', {
               courseId: courseId
           }, function (ret, err) {//004.006获取课程的详细信息
               if (err) {
@@ -458,7 +487,7 @@ function set_down_status(str){
             break;
         case 'less_space':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -473,7 +502,7 @@ function set_down_status(str){
             break;
         case 'not_wifi':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -488,7 +517,7 @@ function set_down_status(str){
             break;
         case 'deny_down':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -503,7 +532,7 @@ function set_down_status(str){
             break;
         case 'shut_network':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 2
@@ -518,7 +547,7 @@ function set_down_status(str){
             break;
         case 'wait':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 'type' : 2
@@ -527,7 +556,7 @@ function set_down_status(str){
         case '1':
         case 1:
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             //下载中->暂停
             // $('.down-progress[type="1"]').attr({
@@ -632,7 +661,7 @@ function set_down_status(str){
             break;
         case 'end':
             clearInterval(down_timer);
-            clearTimeout(down_setTimeout);
+            //clearTimeout(down_setTimeout);
             is_count = false;
             $(obj).attr({
                 type : 4

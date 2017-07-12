@@ -31,7 +31,7 @@ function bind_push() {
     var username = get_loc_val('mine', 'nickName');
     push.bind({
         userName: username,
-        userId: "13051732275"
+        userId: api.deviceId
     }, function (ret, err) {
     });
 }
@@ -148,6 +148,7 @@ function login() {
                 }
             });
         } else {
+   
             var err = '';
             if (!isEmpty(err_conf_007[res.msg])) {
                 err = err_conf_007[res.msg];

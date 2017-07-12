@@ -131,7 +131,7 @@
               api.parseTapmode();
               if (err) {
                   api.toast({
-                      msg: err.msg,
+                      msg: err.msg +"请刷新重试",
                       location: 'middle'
                   });
                   return false;
@@ -170,13 +170,13 @@
                       if(show_pro&&no_loaded){
                           api.hideProgress();
                       }
-                      if (err) {
-                          api.toast({
-                              msg: err.msg,
-                              location: 'middle'
-                          });
-                          return false;
-                      }
+                      // if (err) {
+                      //     api.toast({
+                      //         msg: err.msg+"请刷新重试",
+                      //         location: 'middle'
+                      //     });
+                      //     return false;
+                      // }
                       var tpl = $('#tpl').html();
                       var content = doT.template(tpl);
                       if (ret && ret.state == 'success') {

@@ -56,7 +56,7 @@
               </div>
               
               <div class="li cpl-fool">
-                <div onclick="openActivate('{{=val.courseName}}','{{=val.teacherName}}','{{=val.teacherHonor}}','{{=val.buyTime}}','{{=val.effectiveDay}}','{{=val.teacherImage}}','{{=val.isU}}','{{=val.courseId}}','{{=val.courseBkImage}}',this)" class="btn btn-o"><span>马上激活</span>
+                <div onclick="openActivate('{{=val.courseName}}','{{=val.teacherName}}','{{=val.teacherHonor}}','{{=val.subjectName}}','{{=val.expirationDate}}','{{=val.teacherImage}}','{{=val.isU}}','{{=val.courseId}}','{{=val.courseBkImage}}',this)" class="btn btn-o"><span>马上激活</span>
                   <div class="none data">{{=JSON.stringify(val)}}</div><!-- <i class="icon-lock-open"></i> -->
                 </div>{{ if(isEmpty(val.is_show)) { }}
                 {{ if(val.isU==true){ }}
@@ -629,7 +629,8 @@ function learningNav(obj){
                   modal:false
               });
           }
-          ajaxRequest('api/v2.1/learning/noActivecourse', 'get', param, function (ret, err) {//008.001.1 未激活课程
+         //  ajaxRequest('api/v2.1/learning/noActivecourse', 'get', param, function (ret, err) {//008.001.1 未激活课程
+          ajaxRequest('api/business/learning/noActivecourse/v1.0', 'get', param, function (ret, err) {//008.001.1 未激活课程
               if(show_pro&&no_loaded){
                   api.hideProgress();
               }
@@ -710,6 +711,7 @@ $.each(categoryIdArr, function(i, val) {
     }
     
 });
+
                   no_loaded = false;
                   total = ret.data.total;
                   if (page == 1) {
@@ -778,7 +780,7 @@ $.each(categoryIdArr, function(i, val) {
               modal: false
           });
           var param={};
-          param.token="iPad";
+          param.token="iPhone";
           param.userId=getstor('memberId');
           param.pageNo=1;
           param.pageSize=20;
@@ -816,8 +818,8 @@ $.each(categoryIdArr, function(i, val) {
           param.courseName=a;
           param.teacherName=b;
           param.teacherHonor=c;
-          param.buyTime=d;
-          param.effectiveDay=e;
+          param.subjectName=d;
+          param.expirationDate=e;
           param.teacherImage=f;
           param.isU=g;
           param.courseId=h;

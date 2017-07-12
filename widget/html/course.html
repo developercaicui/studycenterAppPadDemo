@@ -150,7 +150,8 @@
                       var param = {};
                       param.courseId =courseId;
                       param.token = $api.getStorage('token');
-                      ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function (rets, errs) {
+                      // ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function (rets, errs) {
+                      ajaxRequest('api/teachsource/course/courseDetail', 'get', param, function (rets, errs) {
                           if (errs) {
                               /*api.toast({
                                   msg: errs.msg
@@ -440,7 +441,8 @@
           });
           var tmp_course_detail = $api.getStorage(courseId);
           if (isEmpty(tmp_course_detail) || isEmpty(tmp_course_detail['chapters'])) {
-              ajaxRequest('api/v2.1/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {//004.006获取课程的详细信息
+              // ajaxRequest('api/v2.1/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {//004.006获取课程的详细信息
+              ajaxRequest('api/teachsource/course/courseDetail', 'get', {courseId: courseId}, function (ret, err) {
                   if (err) {
                       api.hideProgress();
                       api.toast({
@@ -462,8 +464,7 @@
       //点击页面上的在学课程，跳转学习课程页面
       //点击页面上的在学课程，跳转学习课程页面
       function play() {
-          var chapterId = api.pageParam.chapterId;
-          $api.setStorage("setchapterId",chapterId);
+          
           $api.setStorage("closeSetTimeOut",true);
           get_course_detail(function(ret){
               if(ret){
@@ -474,6 +475,7 @@
       }
       //判断任务类型，跳转相应的页面
       function judge_task(res_process, course_detail) {
+
           if (isEmpty(course_detail) || isEmpty(course_detail.chapters) || isEmpty(res_process)) {
               api.toast({
                   msg: '获取课程信息失败',
@@ -481,15 +483,7 @@
               });
               return false;
           }
-          var task_info = res_process.task_info.taskInfo;//当前任务信息
-              if (isEmpty(task_info)) {
-                  api.toast({
-                  msg: '暂无任务',
-                  location: 'middle'
-                  });
-                  return false;
-          }
-      
+          var task_info = res_process.task_info.taskInfo;//当前任务信息      
           if (isEmpty(task_info)) {
               api.toast({
                   msg: '暂无任务',
@@ -497,6 +491,10 @@
               });
               return false;
           }
+
+          var chapterId = res_process.task_info.chapterId;
+          $api.setStorage("setchapterId",chapterId);
+
           //判断当前任务类型
           if (task_info.taskType == 'video') {
               //视频类型
@@ -551,6 +549,7 @@
               //(实时)最后一次任务状态（new）tested,编号:008.026,GET - /api/v2.1/chapter/tasklastProgress
               //ajaxRequest('api/v2.1/chapter/tasklastProgress', 'get', tmpParam, function (ret, err) {//008.026 最后一次任务状态（new）tested，接口编号：008-026
               //获取课程任务进度列表（new）tested
+              var courseId = course_detail.courseId;
               var param = {
                     'token': $api.getStorage('token'), //必须
                     'memberId' : getstor('memberId'),

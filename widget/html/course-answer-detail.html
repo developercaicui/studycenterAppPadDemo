@@ -15,7 +15,7 @@
     <!--头部-->
     <div class="s-head">
       <div tapmode onclick="closeMe()" class="left"><i class="icon-back"></i></div>
-      <div class="center">问答详情（未回复）</div>
+      <div class="center">交流详情（未回复）</div>
       <div class="right"><i id="del" onclick="del();" class="icon-trash"></i></div>
     </div>
     <script type="text/javascript" src="../script/comm.js"></script>
@@ -42,7 +42,7 @@
               name: 'answerChange'
           }, function (ret) {
               //alert(222);
-              $('.center').html('问答详情 (已回复)');
+              $('.center').html('交流详情 (已回复)');
           });
           api.addEventListener({
               name: 'closeFrameAll'

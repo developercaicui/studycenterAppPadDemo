@@ -476,7 +476,8 @@
       modal:false
       });
       }
-      ajaxRequest('api/v2.1/learning/learningcourse', 'get', param, function (ret, err) {//008.003.2 在学的课程列表（new）
+      // ajaxRequest('api/v2.1/learning/learningcourse', 'get', param, function (ret, err) {//008.003.2 在学的课程列表（new）
+      ajaxRequest('api/business/learning/learningcourse/v1.0', 'get', param, function (ret, err) {//008.003.2 
       if(show_pro&&no_loaded){
       api.hideProgress();
       }

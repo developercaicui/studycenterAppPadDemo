@@ -62,7 +62,9 @@
           } else {
               var param = {};
               param.courseId = api.pageParam.courseId;
-              ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function (ret, err) {
+              // ajaxRequest('api/v2.1/course/courseDetail', 'get', param, function (ret, err) {
+              ajaxRequest('api/teachsource/course/courseDetail', 'get', param, function (ret, err) {
+              
                   api.refreshHeaderLoadDone();
                   api.parseTapmode();
                   if (err) {
